@@ -14,11 +14,6 @@ public class Server {
 
   public static void main(String[] args) {
 
-    //ByteArrayBuffer debug = new ByteArrayBuffer( new byte[]{(byte) 0xff});
-    //System.out.println(debug.toHexString());
-    //System.out.println(new ByteArrayBuffer(debug.get(2, 3)).toHexString());
-    //System.exit(0);
-
     //Prevent the compiler from complaining about possibly uninitialized variables
     ServerSocketChannel serverSocketChannel = null;
     Selector selector = null;
