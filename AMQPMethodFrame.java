@@ -10,7 +10,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
   public ByteArrayBuffer amqpMethod;
 
   //HashMap of all mathod arguments
-  HashMap<String, SomeShit> hashMap = new HashMap();
+  HashMap<String, AMQPNativeType> hashMap = new HashMap<String, AMQPNativeType>();
 
   //Constructor
   AMQPMethodFrame(ByteArrayBuffer amqpClass, ByteArrayBuffer amqpMethod, ByteArrayBuffer argList) throws InvalidFrameException {
@@ -22,6 +22,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     this.amqpMethod = amqpMethod;
 
     System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toLong() + ", method: " + amqpMethod.toLong());
+    System.out.println("Arglist is:");
     System.out.println(argList.toHexString());
 
     //Depending on which class and method, read different values:

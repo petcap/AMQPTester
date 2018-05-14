@@ -10,8 +10,15 @@ import java.util.*;
 
 public class AMQPConnection {
 
+  public static enum AMQPConnectionState {
+    UNINITIALIZED,        //Default state
+    HANDSHAKE_COMPLETE,   //After handshake is complete
+    START_SENT,           //After handshake is complete
+    DISCONNECT            //When the server code should write what remains in the buffer and then disconnect
+  };
+
   //Status for this connection
-  AMQPConnectionStatusEnum status;
+  AMQPConnectionState status;
 
   //The only valid handshake string for AMQP 0-9-1
   public static final ByteArrayBuffer AMQP_VALID_HANDSHAKE = new ByteArrayBuffer(
@@ -32,7 +39,7 @@ public class AMQPConnection {
   //Constructor
   AMQPConnection(SocketChannel socketChannel) {
     //Set initial status to uninitialized/expecting handshake
-    status = AMQPConnectionStatusEnum.UNINITIALIZED;
+    status = AMQPConnectionState.UNINITIALIZED;
 
     //Pointer to the SocketChannel for this client
     this.socketChannel = socketChannel;
@@ -75,13 +82,13 @@ public class AMQPConnection {
   //received or the outgoing queue has changed
   public void updateState() {
     //Is this a newly connected client?
-    if (status == AMQPConnectionStatusEnum.UNINITIALIZED) {
+    if (status == AMQPConnectionState.UNINITIALIZED) {
       //If we have enough data for the handshake in the queue, check
       //the handshake signature and see if it is AMQP valid
       if (queue_incoming.length() >= 8) {
         if (queue_incoming.equals(AMQP_VALID_HANDSHAKE)) {
           System.out.println("Valid handshake received");
-          status = AMQPConnectionStatusEnum.HANDSHAKE_COMPLETE;
+          status = AMQPConnectionState.HANDSHAKE_COMPLETE;
           queue_incoming.clear();
 
           //Temporary CONNECTION.START payload
@@ -119,7 +126,7 @@ public class AMQPConnection {
           };
 
           System.out.println("Sent CONNECTION.START");
-          status = AMQPConnectionStatusEnum.START_SENT;
+          status = AMQPConnectionState.START_SENT;
           this.queue_outgoing.put(tmp_hack_handshake);
 
         } else {
@@ -132,13 +139,13 @@ public class AMQPConnection {
           queue_incoming.clear();
 
           //Set the status to DISCONNECT
-          status = AMQPConnectionStatusEnum.DISCONNECT;
+          status = AMQPConnectionState.DISCONNECT;
         }
       }
     }
 
     //Are we waiting for CONNECTION.START-OK?
-    if (status == AMQPConnectionStatusEnum.START_SENT && !queue_incoming.empty()) {
+    if (status == AMQPConnectionState.START_SENT && !queue_incoming.empty()) {
       System.out.println("Got data");
 
       //FIXME: Add check that we've actually have a complete frame buffered, not just the beginning
@@ -150,7 +157,7 @@ public class AMQPConnection {
         //and the connection should be closed without sending more data
         queue_outgoing.clear();
         queue_incoming.clear();
-        status = AMQPConnectionStatusEnum.DISCONNECT;
+        status = AMQPConnectionState.DISCONNECT;
       }
     }
   }
@@ -160,7 +167,7 @@ public class AMQPConnection {
     int value = 0;
 
     //Always watch for incoming data unless we are disconnecting
-    if (this.status != AMQPConnectionStatusEnum.DISCONNECT) {
+    if (this.status != AMQPConnectionState.DISCONNECT) {
       value += SelectionKey.OP_READ;
     }
 

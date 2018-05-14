@@ -166,7 +166,7 @@ public class Server {
             amqpConnection.confirmSent(writeStatus);
 
             //Check if the client should be disconnected
-            if (amqpConnection.queue_outgoing.length() == 0 && amqpConnection.status == AMQPConnectionStatusEnum.DISCONNECT) {
+            if (amqpConnection.queue_outgoing.length() == 0 && amqpConnection.status == AMQPConnection.AMQPConnectionState.DISCONNECT) {
               writeSocketChannel.close();
               System.out.println("Disconnected a client");
               continue;
