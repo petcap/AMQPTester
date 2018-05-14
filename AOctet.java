@@ -12,4 +12,8 @@ public class AOctet extends AMQPNativeType {
   public int toInt() {
     return (int) buffer.toLong();
   }
+
+  public String toString() {
+    return buffer.toString();
+  }
 };

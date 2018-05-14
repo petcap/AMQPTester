@@ -9,6 +9,7 @@ public class AFieldTable extends AMQPNativeType {
 
   For each member in the field:
   ShortString Key
+  AOctet Value-Type (Basically one char specifying the type, see spec for full list)
   Variable Value
   */
 
@@ -36,6 +37,12 @@ public class AFieldTable extends AMQPNativeType {
       //Pop the key string from the buffer
       AShortString key = new AShortString(payload);
       System.out.println("Key: " + key.toString());
+
+      //Pop the value type
+      AOctet valueType = new AOctet(payload);
+      System.out.println("Value type: " + valueType.toString());
+
+      System.exit(0);
     }
   }
 
