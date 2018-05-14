@@ -10,12 +10,12 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
   public ByteArrayBuffer amqpMethod;
 
   //HashMap of all mathod arguments
-  HashMap<String, AMQPNativeType> hashMap = new HashMap<String, AMQPNativeType>();
+  HashMap<String, AMQPNativeType> arguments = new HashMap<String, AMQPNativeType>();
 
   //Constructor
-  AMQPMethodFrame(ByteArrayBuffer amqpClass, ByteArrayBuffer amqpMethod, ByteArrayBuffer argList) throws InvalidFrameException {
+  AMQPMethodFrame(ByteArrayBuffer amqpClass, ByteArrayBuffer amqpMethod, ByteArrayBuffer buffer) throws InvalidFrameException {
     //Copy the argument list buffer in case we wish to change data in it
-    argList = argList.copy();
+    buffer = buffer.copy();
 
     //Assign given class and method
     this.amqpClass = amqpClass;
@@ -23,16 +23,14 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
     System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toLong() + ", method: " + amqpMethod.toLong());
     System.out.println("Arglist is:");
-    System.out.println(argList.toHexString());
+    System.out.println(buffer.toHexString());
 
     //Depending on which class and method, read different values:
     //Class: Connection
     if (amqpClass.toLong() == 10) {
       //Method: Start-OK
       if (amqpMethod.toLong() == 11) {
-        //TODO: Create abstract data structure which can hold nested AMQP tables etc
-        //Iterate over shit and add to structure until done, then return
-        //Make sure to check that all required fields are present
+        //arguments.put("");
       }
     }
 
