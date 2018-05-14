@@ -14,7 +14,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
   //Constructor
   AMQPMethodFrame(ByteArrayBuffer amqpClass, ByteArrayBuffer amqpMethod, ByteArrayBuffer buffer) throws InvalidFrameException {
-    //Copy the argument list buffer in case we wish to change data in it
+    //Copy the argument list, as we will be modifying it
     buffer = buffer.copy();
 
     //Assign given class and method
@@ -30,7 +30,12 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     if (amqpClass.toLong() == 10) {
       //Method: Start-OK
       if (amqpMethod.toLong() == 11) {
-        //arguments.put("");
+        //Read Client-Properties as a FieldTable
+        try {
+          arguments.put("Client-Properties", new AFieldTable(buffer));
+        } catch (InvalidTypeException e) { //Failed to decode argument data?
+          throw new InvalidFrameException("Failed to decode argument list: " + e.toString());
+        }
       }
     }
 

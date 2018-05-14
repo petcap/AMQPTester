@@ -93,6 +93,12 @@ public class ByteArrayBuffer {
     return ret;
   }
 
+  //Pops the first limit bytes, returning them as a separate byteArrayBuffer
+  //and deleting them from this object
+  public ByteArrayBuffer pop(long limit) {
+    return pop((int) limit);
+  }
+
   //Get buffer between two offsets
   public byte[] get(int start, int stop) {
     if (start > buffer.length || start < 0) start = 0;
