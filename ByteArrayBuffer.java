@@ -148,12 +148,26 @@ public class ByteArrayBuffer {
     return bytesToLong(this.buffer);
   }
 
+  public long toInt() {
+    return bytesToInt(this.buffer);
+  }
+
   //Taken from https://stackoverflow.com/questions/4485128/how-do-i-convert-long-to-byte-and-back-in-java
   public static byte[] longToBytes(long l) {
       byte[] result = new byte[8];
       for (int i = 7; i >= 0; i--) {
           result[i] = (byte)(l & 0xFF);
           l >>= 8;
+      }
+      return result;
+  }
+
+  //Taken (and modified) from https://stackoverflow.com/questions/4485128/how-do-i-convert-long-to-byte-and-back-in-java
+  public static int bytesToInt(byte[] b) {
+      int result = 0;
+      for (int i = 0; i < b.length; i++) {
+          result <<= 8;
+          result |= (b[i] & 0xFF);
       }
       return result;
   }
