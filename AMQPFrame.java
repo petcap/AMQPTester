@@ -6,19 +6,36 @@ import java.util.*;
 
 public class AMQPFrame {
 
+  //Frame type enumeration
+  public enum AMQPFrameType {
+    METHOD((byte) 0x01),
+    HEADER((byte) 0x02),
+    BODY((byte) 0x03),
+    HEARTHBEAT((byte) 0x04);
+
+    private byte frameType;
+
+    AMQPFrameType(byte frameType) {
+      this.frameType = frameType;
+    }
+
+    public byte get() {
+      return frameType;
+    }
+  }
+
   //Type of frame
-  public AMQPFrameTypeEnum amqpFrameType;
+  public AMQPFrameType amqpFrameType;
 
   //Frame channel
   public int channel;
 
   //Payload of the inner frame
-  //TODO: Remove actual payload and represent as an object instead
   public ByteArrayBuffer payload;
   public AMQPInnerFrame innerFrame;
 
   //Constructor
-  AMQPFrame(AMQPFrameTypeEnum amqpFrameType, int channel, ByteArrayBuffer payload, AMQPInnerFrame innerFrame) {
+  AMQPFrame(AMQPFrameType amqpFrameType, int channel, ByteArrayBuffer payload, AMQPInnerFrame innerFrame) {
     this.amqpFrameType = amqpFrameType;
     this.channel = channel;
     this.payload = payload;
@@ -29,14 +46,14 @@ public class AMQPFrame {
   //Expects one complete frame
   public static AMQPFrame build(ByteArrayBuffer frame) throws InvalidFrameException {
     //Frame type
-    AMQPFrameTypeEnum type = null;
+    AMQPFrameType type = null;
 
     //Make sure we got at least the frame type + length
     if (frame.length() < 3) throw new InvalidFrameException("Frame length is too short: " + frame.length());
     //System.out.println("Outer frame: " + frame.toHexString());
 
     //Iterate over all possible frame types and see if the frame type is valid
-    for(AMQPFrameTypeEnum t : AMQPFrameTypeEnum.values()) {
+    for(AMQPFrameType t : AMQPFrameType.values()) {
       if (t.get() == frame.getByte(0)) {
         System.out.println("Building frame object, method: " + t.name());
         type = t; //Correct type
