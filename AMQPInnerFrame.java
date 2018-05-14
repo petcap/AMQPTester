@@ -11,12 +11,12 @@ public class AMQPInnerFrame {
 
   //Build an AMQPInnerFrame from a packet received on the wire
   //Expects one complete frame
-  public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrameTypeEnum frameType) throws InvalidFrameException {
+  public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrame.AMQPFrameType frameType) throws InvalidFrameException {
     //Create a copy of the ByteArrayBuffer since we're going to modify it
     byteArrayBuffer = byteArrayBuffer.copy();
 
     //Do we want to create a Method frame?
-    if (frameType == AMQPFrameTypeEnum.METHOD) {
+    if (frameType == AMQPFrame.AMQPFrameType.METHOD) {
       System.out.println("AMQPInnerFrame building new Method frame from this buffer:");
       System.out.println(byteArrayBuffer.toHexString());
 
