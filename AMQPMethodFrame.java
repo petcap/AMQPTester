@@ -9,8 +9,8 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
   public ByteArrayBuffer amqpClass;
   public ByteArrayBuffer amqpMethod;
 
-  //HashMap of all arguments
-  //HashMap<String, SomeShit> hashMap = new HashMap();
+  //HashMap of all mathod arguments
+  HashMap<String, SomeShit> hashMap = new HashMap();
 
   //Constructor
   AMQPMethodFrame(ByteArrayBuffer amqpClass, ByteArrayBuffer amqpMethod, ByteArrayBuffer argList) throws InvalidFrameException {
@@ -25,7 +25,6 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     System.out.println(argList.toHexString());
 
     //Depending on which class and method, read different values:
-
     //Class: Connection
     if (amqpClass.toLong() == 10) {
       //Method: Start-OK
