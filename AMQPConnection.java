@@ -93,6 +93,8 @@ public class AMQPConnection {
 
           //Temporary CONNECTION.START payload
           //TODO: Build packet object and convert to bytes on the wire
+          //Create MethodFrame -> Add class/method and arguments and build
+          //data on wire
           byte[] tmp_hack_handshake = new byte[] {
             (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0xcf, (byte) 0x00, (byte) 0x0a, (byte) 0x00, (byte) 0x0a, (byte) 0x00, (byte) 0x09, (byte) 0x00, (byte) 0x00, (byte) 0x01,
             (byte) 0xaa, (byte) 0x0c, (byte) 0x63, (byte) 0x61, (byte) 0x70, (byte) 0x61, (byte) 0x62, (byte) 0x69, (byte) 0x6c, (byte) 0x69, (byte) 0x74, (byte) 0x69, (byte) 0x65, (byte) 0x73, (byte) 0x46, (byte) 0x00,
@@ -173,12 +175,12 @@ public class AMQPConnection {
   public int getSelectorRegisterMask() {
     int value = 0;
 
-    //Always watch for incoming data unless we are disconnecting
+    //Always watch for incoming data unless we are in the disconnecting state
     if (this.status != AMQPConnectionState.DISCONNECT) {
       value += SelectionKey.OP_READ;
     }
 
-    //Only attempt to write when we have data in the outgoing queue
+    //Only watch for write status when we have data in the outgoing queue
     if (this.queue_outgoing.length() > 0) {
       value += SelectionKey.OP_WRITE;
     }
