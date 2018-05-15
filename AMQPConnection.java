@@ -151,15 +151,9 @@ public class AMQPConnection {
 
       //FIXME: Add check that we've actually have a complete frame buffered, not just the beginning
       try {
-        ByteArrayBuffer old = queue_incoming.copy();
-
-        System.out.println("Giving this to AMQPFrame.build():");
-        System.out.println(queue_incoming.toHexString());
-
+        //This builds the frame object and pops exactly the full frame from
+        //the queue_incoming buffer
         AMQPFrame frame = AMQPFrame.build(queue_incoming);
-
-        //System.out.println(old.toHexString());
-        //System.out.println(queue_incoming.toHexString());
 
       } catch (InvalidFrameException e) {
         System.out.println("InvalidFrameException: " + e.toString());
@@ -167,6 +161,9 @@ public class AMQPConnection {
         //and the connection should be closed without sending more data
         queue_outgoing.clear();
         queue_incoming.clear();
+
+        //Set status to DISCONNECT, causing the server to write any remaining
+        //data in the queue and then closing the TCP connection
         status = AMQPConnectionState.DISCONNECT;
       }
     }
