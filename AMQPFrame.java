@@ -61,28 +61,45 @@ public class AMQPFrame {
       }
     }
 
+    //We have found the type, remove the corresponding byte from the buffer
+    frame.deleteFront(1);
+
     //Did we find a valid frame type?
     if (type == null) {
       throw new InvalidFrameException("Invalid frame type " + (int) frame.getByte(0));
     }
 
-    //Get the channel number and payload length
-    ByteArrayBuffer channel = frame.getByteArrayBuffer(1, 3);
-    ByteArrayBuffer length = frame.getByteArrayBuffer(3, 7);
+    AShortUInt channel;
+    ALongUInt length;
+
+    //Get the channel number and payload lenth
+    try {
+      channel = new AShortUInt(frame);
+      length = new ALongUInt(frame);
+    } catch (InvalidTypeException e) {
+      throw new InvalidFrameException("AMQPFrame: Failed to decode channel or payload length: " + e.toString());
+    }
 
     //Debug frame length and payload length
-    //System.out.println("Frame received on channel: " + channel.toLong() + "\n" + channel.toHexString());
-    //System.out.println("Frame contains payload length: " + length.toLong() + "\n" + length.toHexString());
+    System.out.println("Frame received on channel: " + channel.toString());
+    System.out.println("Frame contains payload length: " + length.toString());
 
-    //Get the inner frame payload and create a corresponding object from it
-    ByteArrayBuffer framePayload = frame.getByteArrayBuffer(7, 7 + (int) length.toLong());
-    AMQPInnerFrame innerFrame = AMQPInnerFrame.build(framePayload, type);
-
-    //Check that the payload length is correct (or at least long enough)
-    //8 = type(1) + channel(2) + size(4) + frame-end(1)
-    if ((frame.length() - 8) < (int) length.toLong()) {
+    //Check that the buffered payload length is long enough
+    if (frame.length() < 1 + length.toInt()) { //Add 1 because of ending trailer byte 0xCE
       throw new InvalidFrameException("Packet too short");
     }
+
+    //Pop the frame contents
+    ByteArrayBuffer framePayload = frame.pop(length.toInt());
+
+    //Check that we have an EOP (End of Packet) bytes
+    if (!frame.pop(1).equals(new ByteArrayBuffer(new byte[]{(byte) 0xCE}))) {
+      throw new InvalidFrameException("Frame does not end with 0xCE");
+    }
+
+    //All checks on the frame OK, build the inner frame
+    AMQPInnerFrame innerFrame = AMQPInnerFrame.build(framePayload, type);
+
 
     //Make sure the last byte is 0xCE
     if (frame.getByte((int) length.toLong() + 7) != (byte) 0xce) {
@@ -92,7 +109,7 @@ public class AMQPFrame {
     //Create and return a new Frame object
     return new AMQPFrame(
     type,
-    (int) channel.toLong(),
+    channel.toInt(),
     framePayload,
     innerFrame
     );

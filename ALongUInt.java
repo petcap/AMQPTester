@@ -13,6 +13,10 @@ public class ALongUInt extends AMQPNativeType {
     return buffer.toLong();
   }
 
+  public String toString() {
+    return "" + buffer.toLong();
+  }
+
   public long toInt() {
     return buffer.toInt();
   }

@@ -13,8 +13,8 @@ public class AFieldTable extends AMQPNativeType {
   Variable Value
   */
 
-  //HashMap of all data stored within the Field Table
-  HashMap<AShortString, AMQPNativeType> members = new HashMap<AShortString, AMQPNativeType>();
+  //LinkedHashMap of all data stored within the Field Table
+  LinkedHashMap<AShortString, AMQPNativeType> members = new LinkedHashMap<AShortString, AMQPNativeType>();
 
   //Constructor
   //Takes the ByteArrayBuffer and pops one complete Field Table from it
@@ -30,7 +30,7 @@ public class AFieldTable extends AMQPNativeType {
     //Pop the field table payload
     ByteArrayBuffer payload = byteArrayBuffer.pop(length.toLong());
 
-    //Loop over the fields and store them one by one in the HashMap
+    //Loop over the fields and store them one by one in the LinkedHashMap
     while (payload.length() > 0) {
       //System.out.println("FieldTable: Length left: " + payload.length());
 

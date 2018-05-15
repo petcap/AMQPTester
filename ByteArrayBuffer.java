@@ -168,7 +168,7 @@ public class ByteArrayBuffer {
     return bytesToLong(this.buffer);
   }
 
-  public long toInt() {
+  public int toInt() {
     return bytesToInt(this.buffer);
   }
 

@@ -7,37 +7,49 @@
 public class AMQPInnerFrame {
 
   AMQPInnerFrame() {}
-  AMQPInnerFrame(ByteArrayBuffer byteArrayBuffer) {}
+    AMQPInnerFrame(ByteArrayBuffer byteArrayBuffer) {}
 
-  //Build an AMQPInnerFrame from a packet received on the wire
-  //Expects one complete frame
-  public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrame.AMQPFrameType frameType) throws InvalidFrameException {
-    //Create a copy of the ByteArrayBuffer since we're going to modify it
-    byteArrayBuffer = byteArrayBuffer.copy();
+      //Build an AMQPInnerFrame from a packet received on the wire
+      //Expects one complete frame
+      //This method consumes data from the ByteArrayBuffer, make sure to copy data
+      //if you need to keep it for other purposes
+      public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrame.AMQPFrameType frameType) throws InvalidFrameException {
+        //Do we want to create a Method frame?
+        if (frameType == AMQPFrame.AMQPFrameType.METHOD) {
+          //System.out.println("AMQPInnerFrame building new Method frame from this buffer:");
+          //System.out.println(byteArrayBuffer.toHexString());
 
-    //Do we want to create a Method frame?
-    if (frameType == AMQPFrame.AMQPFrameType.METHOD) {
-      System.out.println("AMQPInnerFrame building new Method frame from this buffer:");
-      System.out.println(byteArrayBuffer.toHexString());
+          //Declare and set to null so compiler wont complain
+          AShortUInt amqpClass = null;
+          AShortUInt amqpMethod = null;
 
-      //Read class and method
-      ByteArrayBuffer amqpClass = byteArrayBuffer.pop(2); //Pop 2 bytes
-      //System.out.println("Assigning class : " + amqpClass.toLong());
-      ByteArrayBuffer amqpMethod = byteArrayBuffer.pop(2); //Pop 2 bytes
-      //System.out.println("Assigning method: " + amqpMethod.toLong());
+          //Read class and method
+          try {
+            amqpClass = new AShortUInt(byteArrayBuffer); //Pop 2 bytes
+            amqpMethod = new AShortUInt(byteArrayBuffer); //Pop 2 bytes
+          } catch (InvalidTypeException e) {
+            throw new InvalidFrameException("Failed to read method frame class/method: " + e.toString());
+          }
 
-      //From now on, we need to start reading the method arguments
-      //The structure of each argument list differs depending on which class
-      //and method we're dealing with
-      AMQPMethodFrame amqpMethodFrame = new AMQPMethodFrame(
-        amqpClass,
-        amqpMethod,
-        byteArrayBuffer
-      );
+          AMQPMethodFrame amqpMethodFrame = null;
 
-      return amqpMethodFrame;
+          //From now on, we need to start reading the method arguments
+          //The structure of each argument list differs depending on which class
+          //and method we're dealing with
+          try {
+            amqpMethodFrame = new AMQPMethodFrame(
+            amqpClass,
+            amqpMethod,
+            byteArrayBuffer
+            );
+          } catch (InvalidTypeException e) {
+            throw new InvalidFrameException("Failed to build method frame, invalid encoding: " + e.toString());
+          }
+
+          return amqpMethodFrame;
+        }
+
+        //Should never be reached
+        throw new InvalidFrameException("Unknown frame type received (probably a bug in the tester code)");
+      }
     }
-
-    throw new InvalidFrameException("Unknown frame type, this should never happen");
-  }
-}

@@ -6,40 +6,34 @@ import java.util.*;
 
 public class AMQPMethodFrame extends AMQPInnerFrame {
   //Class and method represented by this frame
-  public ByteArrayBuffer amqpClass;
-  public ByteArrayBuffer amqpMethod;
+  public AShortUInt amqpClass;
+  public AShortUInt amqpMethod;
 
-  //HashMap of all mathod arguments
-  HashMap<String, AMQPNativeType> arguments = new HashMap<String, AMQPNativeType>();
+  //LinkedHashMap of all mathod arguments
+  LinkedHashMap<String, AMQPNativeType> arguments = new LinkedHashMap<String, AMQPNativeType>();
 
   //Constructor
-  AMQPMethodFrame(ByteArrayBuffer amqpClass, ByteArrayBuffer amqpMethod, ByteArrayBuffer buffer) throws InvalidFrameException {
-    //Copy the argument list, as we will be modifying it
-    buffer = buffer.copy();
+  AMQPMethodFrame(AShortUInt amqpClass, AShortUInt amqpMethod, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
 
     //Assign given class and method
     this.amqpClass = amqpClass;
     this.amqpMethod = amqpMethod;
 
-    System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toLong() + ", method: " + amqpMethod.toLong());
-    System.out.println("Arglist is:");
-    System.out.println(buffer.toHexString());
+    System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
+    //System.out.println("Arglist is:");
+    //System.out.println(buffer.toHexString());
 
     //Depending on which class and method, read different values:
     //Class: Connection
-    if (amqpClass.toLong() == 10) {
+    if (amqpClass.toInt() == 10) {
       //Method: Start-OK
-      if (amqpMethod.toLong() == 11) {
+      if (amqpMethod.toInt() == 11) {
         //Read Client-Properties as a FieldTable
-        try {
-          //Read one field table (Client-properties)
-          arguments.put("Client-Properties", new AFieldTable(buffer));
+        //Read one field table (Client-properties)
+        arguments.put("Client-Properties", new AFieldTable(buffer));
 
-          //Debug print
-          System.out.println(arguments.get("Client-Properties").toString());
-        } catch (InvalidTypeException e) { //Failed to decode argument data?
-          throw new InvalidFrameException("Failed to decode argument list: " + e.toString());
-        }
+        //Debug print
+        System.out.println(arguments.get("Client-Properties").toString());
       }
     }
 

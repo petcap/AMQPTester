@@ -14,4 +14,8 @@ public class ABoolean extends AMQPNativeType {
   public boolean toBool() {
     return value;
   }
+
+  public String toString() {
+    return value ? "True" : "False";
+  }
 };

@@ -4,8 +4,12 @@ public class ALongLongUInt extends AMQPNativeType {
 
   //Constructor
   ALongLongUInt(ByteArrayBuffer byteArrayBuffer) throws InvalidTypeException {
-    if (byteArrayBuffer.length() != 8) throw new InvalidTypeException("Invalid type length");
+    if (byteArrayBuffer.length() < 8) throw new InvalidTypeException("Invalid type length");
     this.type = AMQPNativeType.Type.LONGLONG_UINT;
-    this.buffer = byteArrayBuffer.copy();
+    this.buffer = byteArrayBuffer.pop(8);
+  }
+
+  public String toString() {
+    return "" + buffer.toLong();
   }
 };
