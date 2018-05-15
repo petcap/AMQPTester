@@ -34,53 +34,66 @@ public class AFieldTable extends AMQPNativeType {
     while (payload.length() > 0) {
       //System.out.println("FieldTable: Length left: " + payload.length());
 
-      System.out.println("----------------------------");
+      //System.out.println("----------------------------");
 
       //Pop the key string from the buffer
       AShortString key = new AShortString(payload);
-      System.out.println("Key        : " + key.toString());
+      //System.out.println("Key        : " + key.toString());
 
       //Pop the value type
       AOctet valueType = new AOctet(payload);
-      System.out.println("Value type : " + valueType.toString());
+      //System.out.println("Value type : " + valueType.toString());
 
       //Now we know the key and the value type, and we need to create different
       //AMQPNativeType objects depending on what the valueType is
 
       //long-string
-      if (valueType.toString().equals("S")) {
+      if (valueType.get().toString().equals("S")) {
         ALongString value = new ALongString(payload);
-        System.out.println("Long String: " + value.toString());
+        //System.out.println("Long String: " + value.toString());
         members.put(key, value);
         continue;
       }
 
       //field-table
-      if (valueType.toString().equals("F")) {
-        System.out.println("Building nested field table");
+      if (valueType.get().toString().equals("F")) {
+        //System.out.println("Building nested field table");
         AFieldTable value = new AFieldTable(payload);
-        System.out.println("Ending nested field table");
+        //System.out.println("Ending nested field table");
         members.put(key, value);
         continue;
       }
 
       //boolean
-      if (valueType.toString().equals("t")) {
+      if (valueType.get().toString().equals("t")) {
         ABoolean value = new ABoolean(payload);
-        System.out.println("Boolean: " + (value.toBool() ? "true" : "false"));
+        //System.out.println("Boolean: " + (value.toBool() ? "true" : "false"));
         members.put(key, value);
         continue;
       }
 
       //If we reach down here, we were unable to understand the value type and we need to stop
       throw new InvalidTypeException("Unknown Field Table type: " + valueType.toString());
-
-
     }
   }
 
   //Number of members in this field table
   public int length() {
     return members.size();
+  }
+
+  //For debugging, return all fields
+  public String toString() {
+    //StringBuilder is not needed for academic code
+    String ret = "Debug: Printing Field-Table values:\n";
+    ret += "----- BEGIN FIELD TABLE -----\n";
+    for(AShortString key : members.keySet()) {
+      ret += "Field name: " + key.toString() + "\n";
+      ret += "Field type: " + members.get(key).getClass().getSimpleName() + "\n";
+      ret += "Field valu: " + members.get(key).toString() + "\n";
+      ret += "----- NEXT VALUE -----\n";
+    }
+    ret += "----- END FIELD TABLE -----\n";
+    return ret;
   }
 };

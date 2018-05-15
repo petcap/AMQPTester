@@ -144,6 +144,26 @@ public class ByteArrayBuffer {
     return "(frame below is of length " + buffer.length + ")\n" + new String(hexChars).replaceAll("(.{2})", "$1 ");
   }
 
+  /*
+  This method is originally taken from
+  https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java#9855338
+  */
+  //Get the buffer as a hexadecimal encoded string for debugging purposes
+  public static String byteArrayToString(byte[] in) {
+    byte[] hexArray = "0123456789abcdef".getBytes();
+    byte[] hexChars = new byte[in.length * 2];
+    for (int j = 0; j < in.length; j++) {
+      int v = in[j] & 0xFF;
+      hexChars[j * 2] = hexArray[v >>> 4];
+      hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+    }
+    return new String(hexChars);
+  }
+
+  public static String byteArrayToString(ByteArrayBuffer in) {
+    return byteArrayToString(in.get());
+  }
+
   public long toLong() {
     return bytesToLong(this.buffer);
   }

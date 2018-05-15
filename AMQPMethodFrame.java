@@ -32,7 +32,11 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
       if (amqpMethod.toLong() == 11) {
         //Read Client-Properties as a FieldTable
         try {
+          //Read one field table (Client-properties)
           arguments.put("Client-Properties", new AFieldTable(buffer));
+
+          //Debug print
+          System.out.println(arguments.get("Client-Properties").toString());
         } catch (InvalidTypeException e) { //Failed to decode argument data?
           throw new InvalidFrameException("Failed to decode argument list: " + e.toString());
         }
