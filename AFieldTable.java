@@ -90,6 +90,7 @@ public class AFieldTable extends AMQPNativeType {
   }
 
   //Encode data for being sent over the network
+  //FIXME: Bad encoding here
   public ByteArrayBuffer toWire() {
     //Return data
     ByteArrayBuffer ret = new ByteArrayBuffer();

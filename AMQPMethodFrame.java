@@ -28,12 +28,19 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     if (amqpClass.toInt() == 10) {
       //Method: Start-OK
       if (amqpMethod.toInt() == 11) {
+        //Print current buffer...
+        System.out.println(buffer.toHexString());
+
         //Read Client-Properties as a FieldTable
         //Read one field table (Client-properties)
         arguments.put("Client-Properties", new AFieldTable(buffer));
 
+        //Re-encode the frame and see what we get
+        //FIXME: This is not correct
+        System.out.println(arguments.get("Client-Properties").toWire().toHexString());
+
         //Debug print
-        System.out.println(arguments.get("Client-Properties").toString());
+        //System.out.println(arguments.get("Client-Properties").toString());
       }
     }
   }
