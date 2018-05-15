@@ -99,13 +99,7 @@ public class AMQPFrame {
 
     //All checks on the frame OK, build the inner frame
     AMQPInnerFrame innerFrame = AMQPInnerFrame.build(framePayload, type);
-
-
-    //Make sure the last byte is 0xCE
-    if (frame.getByte((int) length.toLong() + 7) != (byte) 0xce) {
-      throw new InvalidFrameException("Invalid frame-end: Not 0xCE");
-    }
-
+    
     //Create and return a new Frame object
     return new AMQPFrame(
     type,

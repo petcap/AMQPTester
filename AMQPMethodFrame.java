@@ -36,6 +36,5 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         System.out.println(arguments.get("Client-Properties").toString());
       }
     }
-
   }
 }
