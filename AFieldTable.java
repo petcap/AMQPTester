@@ -25,6 +25,8 @@ public class AFieldTable extends AMQPNativeType {
     //Pop first 4 bytes of the buffer into an ALongUInt
     ALongUInt length = new ALongUInt(byteArrayBuffer);
 
+    System.out.println("Creating new Field Table with byte size: " + length.toInt());
+
     //Pop the field table payload
     ByteArrayBuffer payload = byteArrayBuffer.pop(length.toLong());
 
@@ -44,26 +46,35 @@ public class AFieldTable extends AMQPNativeType {
 
       //Now we know the key and the value type, and we need to create different
       //AMQPNativeType objects depending on what the valueType is
-      AMQPNativeType value = null;
 
       //long-string
       if (valueType.toString().equals("S")) {
-        value = new ALongString(payload);
+        ALongString value = new ALongString(payload);
         System.out.println("Long String: " + value.toString());
+        members.put(key, value);
+        continue;
       }
 
-      System.out.println("----------------------------");
-
-      //Make sure we understand the data types we're getting
-      //Unfortunately, we cannot simply ignore some types as they might have
-      //arbitrary lengths, causing us to lose track of where we should continue
-      //reading data
-      if (value == null) {
-        throw new InvalidTypeException("Unknown Field Table type: " + valueType.toString());
+      //field-table
+      if (valueType.toString().equals("F")) {
+        System.out.println("Building nested field table");
+        AFieldTable value = new AFieldTable(payload);
+        System.out.println("Ending nested field table");
+        members.put(key, value);
+        continue;
       }
 
-      //Store argument in HashMap
-      members.put(key, value);
+      //boolean
+      if (valueType.toString().equals("t")) {
+        ABoolean value = new ABoolean(payload);
+        System.out.println("Boolean: " + (value.toBool() ? "true" : "false"));
+        members.put(key, value);
+        continue;
+      }
+
+      //If we reach down here, we were unable to understand the value type and we need to stop
+      throw new InvalidTypeException("Unknown Field Table type: " + valueType.toString());
+
 
     }
   }
