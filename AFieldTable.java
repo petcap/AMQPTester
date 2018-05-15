@@ -14,7 +14,14 @@ public class AFieldTable extends AMQPNativeType {
   */
 
   //LinkedHashMap of all data stored within the Field Table
+  //Linked because we want to store the order of the elements (which should really
+  //not matter but it might be good for fuzzing later on)
   LinkedHashMap<AShortString, AMQPNativeType> members = new LinkedHashMap<AShortString, AMQPNativeType>();
+
+  //Constructor when not created from an incoming data buffer
+  AFieldTable(LinkedHashMap<AShortString, AMQPNativeType> members) {
+    this.members = members;
+  }
 
   //Constructor
   //Takes the ByteArrayBuffer and pops one complete Field Table from it
@@ -48,7 +55,7 @@ public class AFieldTable extends AMQPNativeType {
       //AMQPNativeType objects depending on what the valueType is
 
       //long-string
-      if (valueType.get().toString().equals("S")) {
+      if (valueType.toWire().toString().equals("S")) {
         ALongString value = new ALongString(payload);
         //System.out.println("Long String: " + value.toString());
         members.put(key, value);
@@ -56,7 +63,7 @@ public class AFieldTable extends AMQPNativeType {
       }
 
       //field-table
-      if (valueType.get().toString().equals("F")) {
+      if (valueType.toWire().toString().equals("F")) {
         //System.out.println("Building nested field table");
         AFieldTable value = new AFieldTable(payload);
         //System.out.println("Ending nested field table");
@@ -65,7 +72,7 @@ public class AFieldTable extends AMQPNativeType {
       }
 
       //boolean
-      if (valueType.get().toString().equals("t")) {
+      if (valueType.toWire().toString().equals("t")) {
         ABoolean value = new ABoolean(payload);
         //System.out.println("Boolean: " + (value.toBool() ? "true" : "false"));
         members.put(key, value);
@@ -80,6 +87,35 @@ public class AFieldTable extends AMQPNativeType {
   //Number of members in this field table
   public int length() {
     return members.size();
+  }
+
+  //Encode data for being sent over the network
+  public ByteArrayBuffer toWire() {
+    //Return data
+    ByteArrayBuffer ret = new ByteArrayBuffer();
+
+    //This will be populated with all data in the Field Table
+    ByteArrayBuffer data = new ByteArrayBuffer();
+
+    //Loop over our members
+    for(AShortString key : members.keySet()) {
+      //Member to be encoded
+      AMQPNativeType val = members.get(key);
+
+      //Put 1 octet length + the key string
+      data.put(key.toWire());
+
+      //Put the actual payload, whatever it might be
+      data.put(val.toWire());
+    }
+
+    //Calculate Field Table length and add to return buffer
+    ret.put(new ALongUInt(data.toLong()).toWire());
+
+    //Add actual payload
+    ret.put(data);
+
+    return ret;
   }
 
   //For debugging, return all fields

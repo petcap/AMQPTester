@@ -16,6 +16,17 @@ public class ALongString extends AMQPNativeType {
     this.buffer = byteArrayBuffer.pop(length.toInt());
   }
 
+  //Encode data type to wire
+  public ByteArrayBuffer toWire() {
+    //Length of the string
+    ALongUInt len = new ALongUInt(buffer.length());
+
+    //Return length (4 octet) + the string itself
+    ByteArrayBuffer ret = len.toWire();
+    ret.put(buffer);
+    return ret;
+  }
+
   public String toString() {
     return buffer.toString();
   }

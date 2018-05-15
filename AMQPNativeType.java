@@ -24,12 +24,10 @@ public class AMQPNativeType {
   public Type type;
 
   //Constructor
-  AMQPNativeType() throws InvalidTypeException {
+  //AMQPNativeType() throws InvalidTypeException {}
 
-  }
-
-  //Get a copy of data buffer
-  public ByteArrayBuffer get() {
-    return buffer.copy();
+  //Encode data type to wire
+  public ByteArrayBuffer toWire() {
+    return new ByteArrayBuffer();
   }
 };

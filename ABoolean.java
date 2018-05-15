@@ -11,8 +11,15 @@ public class ABoolean extends AMQPNativeType {
 
   }
 
+  //Get boolean value
   public boolean toBool() {
     return value;
+  }
+
+  //Encode data type to wire
+  public ByteArrayBuffer toWire() {
+    if (value) return new ByteArrayBuffer(new byte[]{0x01}); //True
+    return new ByteArrayBuffer(new byte[]{0x00}); //False
   }
 
   public String toString() {
