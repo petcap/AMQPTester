@@ -99,13 +99,13 @@ public class AMQPFrame {
 
     //All checks on the frame OK, build the inner frame
     AMQPInnerFrame innerFrame = AMQPInnerFrame.build(framePayload, type);
-    
+
     //Create and return a new Frame object
     return new AMQPFrame(
-    type,
-    channel.toInt(),
-    framePayload,
-    innerFrame
+      type,
+      channel.toInt(),
+      framePayload,
+      innerFrame
     );
   }
 }
