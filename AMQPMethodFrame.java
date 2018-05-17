@@ -42,6 +42,8 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         //System.out.println(buffer.toHexString());
 
         //Read the specific arguments to this method and store them in the hashmap
+        //They are stored in order in the linked hashmap which is crucial for encoding
+        //frames later
         arguments.put("client-properties", new AFieldTable(buffer));
         arguments.put("mechanism", new AShortString(buffer));
         arguments.put("response", new ALongString(buffer));
