@@ -56,12 +56,19 @@ public class NativeTypeTester {
       System.out.println("AFieldTable:");
       test = new ByteArrayBuffer(new byte[]{
         0x00, 0x00, 0x00, 0x00, //Length, updated below for convenience
-        0x04, 'T', 'e', 's', 't',//First key name, short string
+        0x04, 'T', 'e', 's', 't', //First key name, short string
         'S', //First member type, long string
         0x00, 0x00, 0x00, 0x04, 'A', 'M', 'Q', 'P', //First member
-        0x05, 'T', 'e', 's', 't', '2',//Second key name, short string
+        0x05, 'T', 'e', 's', 't', '2', //Second key name, short string
         't', //Second member type, boolean
-        0x00 //Second member
+        0x00, //Second member
+        0x05, 'T', 'e', 's', 't', '3', //Third key name, short string
+        'F', //Third member type, nested field table
+          0x00, 0x00, 0x00, 0x0e, //Nested field table length
+          0x06, 'N', 'e', 's', 't', 'e', 'd', //Nested key name
+          's', //First nested type, short string
+          0x05, //Nested string length
+          'H', 'e', 'l', 'l', 'o' //Nested string payoad
       });
       //Update Field Table length
       test.buffer[3] = (byte) ((test.buffer.length) - 4);

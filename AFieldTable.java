@@ -62,9 +62,18 @@ public class AFieldTable extends AMQPNativeType {
         continue;
       }
 
+      //short-string
+      if (valueType.toWire().toString().equals("s")) {
+        AShortString value = new AShortString(payload);
+        //System.out.println("Long String: " + value.toString());
+        members.put(key, value);
+        continue;
+      }
+
       //field-table
       if (valueType.toWire().toString().equals("F")) {
-        //System.out.println("Building nested field table");
+        //System.out.println("Building nested field table from:");
+        //System.out.println(payload.toHexString());
         AFieldTable value = new AFieldTable(payload);
         //System.out.println("Ending nested field table");
         members.put(key, value);
