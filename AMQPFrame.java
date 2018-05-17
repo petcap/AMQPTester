@@ -70,8 +70,10 @@ public class AMQPFrame {
     return ret;
   }
 
-  //Build an AMQPFrame from a packet received on the wire
-  //Expects one complete frame
+  //Build an AMQPFrame from a frame received on the wire
+  //Expects (at least) one complete frame
+  //This method processes any of the four frame types
+  //The ByteArrayBuffer will have the frame popped
   public static AMQPFrame build(ByteArrayBuffer frame) throws InvalidFrameException {
     //Frame type
     AMQPFrameType type = null;

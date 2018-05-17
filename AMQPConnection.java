@@ -22,7 +22,7 @@ public class AMQPConnection {
 
   //The only valid handshake string for AMQP 0-9-1
   public static final ByteArrayBuffer AMQP_VALID_HANDSHAKE = new ByteArrayBuffer(
-  new byte[]{'A', 'M', 'Q', 'P', 0x00, 0x00, 0x09, 0x01}
+    new byte[]{'A', 'M', 'Q', 'P', 0x00, 0x00, 0x09, 0x01}
   );
 
   //Incoming data queue
@@ -156,9 +156,9 @@ public class AMQPConnection {
         //This builds the frame object and pops exactly the full frame from
         //the queue_incoming buffer
 
-        System.out.println(queue_incoming.toHexString());
+        //System.out.println(queue_incoming.toHexString());
         AMQPFrame frame = AMQPFrame.build(queue_incoming);
-        System.out.println(frame.toWire().toHexString());
+        //System.out.println(frame.toWire().toHexString());
 
       } catch (InvalidFrameException e) {
         System.out.println("InvalidFrameException: " + e.toString());
