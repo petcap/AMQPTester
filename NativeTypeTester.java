@@ -70,11 +70,13 @@ public class NativeTypeTester {
           0x05, //Nested string length
           'H', 'e', 'l', 'l', 'o' //Nested string payoad
       });
+
       //Update Field Table length
       test.buffer[3] = (byte) ((test.buffer.length) - 4);
 
       System.out.println("From wire: " + test.toHexString());
-      System.out.println("To wire  : " + new AFieldTable(test).toWire().toHexString());
+      System.out.println("To wire  : " + new AFieldTable(test.copy()).toWire().toHexString());
+      System.out.println(new AFieldTable(test.copy()).toString());
       System.out.println("-----------------------------------");
 
     } catch (InvalidTypeException e) {
