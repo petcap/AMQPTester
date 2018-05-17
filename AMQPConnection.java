@@ -158,7 +158,7 @@ public class AMQPConnection {
 
         System.out.println(queue_incoming.toHexString());
         AMQPFrame frame = AMQPFrame.build(queue_incoming);
-        //System.out.println(frame.toWire().toHexString());
+        System.out.println(frame.toWire().toHexString());
 
       } catch (InvalidFrameException e) {
         System.out.println("InvalidFrameException: " + e.toString());

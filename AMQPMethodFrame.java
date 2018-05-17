@@ -29,7 +29,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     this.amqpClass = amqpClass;
     this.amqpMethod = amqpMethod;
 
-    //System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
+    System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
     //System.out.println("Arglist is:");
     //System.out.println(buffer.toHexString());
 
@@ -41,9 +41,11 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         //Print current buffer...
         //System.out.println(buffer.toHexString());
 
-        //Read Client-Properties as a FieldTable
-        //Read one field table (Client-properties)
-        arguments.put("Client-Properties", new AFieldTable(buffer));
+        //Read the specific arguments to this method and store them in the hashmap
+        arguments.put("client-properties", new AFieldTable(buffer));
+        arguments.put("mechanism", new AShortString(buffer));
+        arguments.put("response", new ALongString(buffer));
+        arguments.put("locale", new AShortString(buffer));
 
         //Re-encode the frame and see what we get
         //FIXME: This is not correct
