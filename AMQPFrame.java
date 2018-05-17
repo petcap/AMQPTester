@@ -6,7 +6,7 @@ import java.util.*;
 
 public class AMQPFrame {
 
-  //Frame type enumeration
+  //Frame type enumeration including the frame level octet
   public enum AMQPFrameType {
     METHOD((byte) 0x01),
     HEADER((byte) 0x02),
@@ -22,23 +22,25 @@ public class AMQPFrame {
     public byte get() {
       return frameType;
     }
+
+    public ByteArrayBuffer toWire() {
+      return new ByteArrayBuffer(frameType);
+    }
   }
 
   //Type of frame
   public AMQPFrameType amqpFrameType;
 
   //Frame channel
-  public int channel;
+  public AShortUInt channel;
 
-  //Payload of the inner frame
-  public ByteArrayBuffer payload;
+  //The inner frame
   public AMQPInnerFrame innerFrame;
 
   //Constructor
-  AMQPFrame(AMQPFrameType amqpFrameType, int channel, ByteArrayBuffer payload, AMQPInnerFrame innerFrame) {
+  AMQPFrame(AMQPFrameType amqpFrameType, AShortUInt channel, AMQPInnerFrame innerFrame) {
     this.amqpFrameType = amqpFrameType;
     this.channel = channel;
-    this.payload = payload;
     this.innerFrame = innerFrame;
   }
 
@@ -52,7 +54,7 @@ public class AMQPFrame {
     if (frame.length() < 3) throw new InvalidFrameException("Frame length is too short: " + frame.length());
     //System.out.println("Outer frame: " + frame.toHexString());
 
-    //Iterate over all possible frame types and see if the frame type is valid
+    //Iterate over all possible frame types and see what type of frame we got
     for(AMQPFrameType t : AMQPFrameType.values()) {
       if (t.get() == frame.getByte(0)) {
         System.out.println("Building frame object, method: " + t.name());
@@ -61,13 +63,13 @@ public class AMQPFrame {
       }
     }
 
-    //We have found the type, remove the corresponding byte from the buffer
-    frame.deleteFront(1);
-
     //Did we find a valid frame type?
     if (type == null) {
       throw new InvalidFrameException("Invalid frame type " + (int) frame.getByte(0));
     }
+
+    //We have found the type, remove the corresponding byte from the buffer
+    frame.deleteFront(1);
 
     AShortUInt channel;
     ALongUInt length;
@@ -103,8 +105,8 @@ public class AMQPFrame {
     //Create and return a new Frame object
     return new AMQPFrame(
       type,
-      channel.toInt(),
-      framePayload,
+      channel,
+      //framePayload, //We don't care about the original payload since it is redundant
       innerFrame
     );
   }
