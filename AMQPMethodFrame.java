@@ -44,4 +44,26 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
       }
     }
   }
-}
+
+  //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
+  public ByteArrayBuffer toWire() {
+    //To be populated with the frame
+    ByteArrayBuffer ret = new ByteArrayBuffer();
+
+    //Method frames are pretty simple:
+    //Class + Method + Argument struct
+    //Argument struct needs to be in order, but since the LinkedHashMap is in order
+    //it is possible to just encode stuff directly from it
+
+    //Put the class and method names first
+    ret.put(amqpClass.toWire());
+    ret.put(amqpMethod.toWire());
+
+    //Put the argument list
+    for(AMQPNativeType val : arguments.values()) {
+      ret.put(val.toWire());
+    }
+
+    return ret;
+  }
+};

@@ -52,4 +52,4 @@ public class AMQPInnerFrame {
         //Should never be reached
         throw new InvalidFrameException("Unknown frame type received (probably a bug in the tester code)");
       }
-    }
+    };

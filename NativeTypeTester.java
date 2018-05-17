@@ -54,6 +54,8 @@ public class NativeTypeTester {
       System.out.println("-----------------------------------");
 
       System.out.println("AFieldTable:");
+
+      //Test frame contents
       test = new ByteArrayBuffer(new byte[]{
         0x00, 0x00, 0x00, 0x00, //Length, updated below for convenience
         0x04, 'T', 'e', 's', 't', //First key name, short string

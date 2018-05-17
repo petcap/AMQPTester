@@ -206,4 +206,4 @@ public class ByteArrayBuffer {
       }
       return result;
   }
-}
+};
