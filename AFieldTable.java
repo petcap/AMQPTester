@@ -131,7 +131,7 @@ public class AFieldTable extends AMQPNativeType {
     //Length header for the Field Table, 4 octets
     ByteArrayBuffer length = (new ALongUInt(payload.length())).toWire();
 
-    System.out.println("Field table length: " + length.toHexString());
+    //System.out.println("Field table length: " + length.toHexString());
 
     //Put payload length as 4 octets
     ret.put(length);

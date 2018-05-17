@@ -56,6 +56,7 @@ public class NativeTypeTester {
       System.out.println("AFieldTable:");
 
       //Test frame contents
+      //This is a complete nested Field Table
       test = new ByteArrayBuffer(new byte[]{
         0x00, 0x00, 0x00, 0x00, //Length, updated below for convenience
         0x04, 'T', 'e', 's', 't', //First key name, short string
@@ -76,13 +77,20 @@ public class NativeTypeTester {
       //Update Field Table length
       test.buffer[3] = (byte) ((test.buffer.length) - 4);
 
-      System.out.println("From wire: " + test.toHexString());
-      System.out.println("To wire  : " + new AFieldTable(test.copy()).toWire().toHexString());
-      System.out.println(new AFieldTable(test.copy()).toString());
+      //Build a new Method Frame
+      AMQPInnerFrame methodFrame = new AMQPMethodFrame(
+        new AShortUInt(10),
+        new AShortUInt(11),
+        test.copy() //Give copy of arguments
+      );
+
+      System.out.println("Argument list: " + test.toHexString());
+      System.out.println("Frame data: " + methodFrame.toWire().toHexString());
+      //System.out.println(new AFieldTable(test.copy()).toString());
       System.out.println("-----------------------------------");
 
-    } catch (InvalidTypeException e) {
-      System.out.println("Caught type exception: " + e.toString());
+    } catch (Exception e) {
+      System.out.println("Caught exception: " + e.toString());
     }
   }
 };

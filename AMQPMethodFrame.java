@@ -12,6 +12,16 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
   //LinkedHashMap of all mathod arguments
   LinkedHashMap<String, AMQPNativeType> arguments = new LinkedHashMap<String, AMQPNativeType>();
 
+  //Constructor for programmatically creating new frames
+  AMQPMethodFrame(AShortUInt amqpClass, AShortUInt amqpMethod, LinkedHashMap<String, AMQPNativeType> arguments) {
+
+    //Assign given class and method
+    this.amqpClass = amqpClass;
+    this.amqpMethod = amqpMethod;
+    this.arguments = arguments;
+  }
+
+
   //Constructor
   AMQPMethodFrame(AShortUInt amqpClass, AShortUInt amqpMethod, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
 
