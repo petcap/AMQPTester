@@ -156,7 +156,7 @@ public class AMQPConnection {
         //This builds the frame object and pops exactly the full frame from
         //the queue_incoming buffer
 
-        //System.out.println(queue_incoming.toHexString());
+        System.out.println(queue_incoming.toHexString());
         AMQPFrame frame = AMQPFrame.build(queue_incoming);
         //System.out.println(frame.toWire().toHexString());
 
