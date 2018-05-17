@@ -10,10 +10,10 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
   public AShortUInt amqpMethod;
 
   //LinkedHashMap of all mathod arguments
-  LinkedHashMap<String, AMQPNativeType> arguments = new LinkedHashMap<String, AMQPNativeType>();
+  LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
 
   //Constructor for programmatically creating new frames
-  AMQPMethodFrame(AShortUInt amqpClass, AShortUInt amqpMethod, LinkedHashMap<String, AMQPNativeType> arguments) {
+  AMQPMethodFrame(AShortUInt amqpClass, AShortUInt amqpMethod, LinkedHashMap<AShortString, AMQPNativeType> arguments) {
 
     //Assign given class and method
     this.amqpClass = amqpClass;
@@ -21,8 +21,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     this.arguments = arguments;
   }
 
-
-  //Constructor
+  //Constructor for creating from buffers
   AMQPMethodFrame(AShortUInt amqpClass, AShortUInt amqpMethod, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
 
     //Assign given class and method
@@ -44,10 +43,10 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         //Read the specific arguments to this method and store them in the hashmap
         //They are stored in order in the linked hashmap which is crucial for encoding
         //frames later
-        arguments.put("client-properties", new AFieldTable(buffer));
-        arguments.put("mechanism", new AShortString(buffer));
-        arguments.put("response", new ALongString(buffer));
-        arguments.put("locale", new AShortString(buffer));
+        arguments.put(new AShortString("client-properties"), new AFieldTable(buffer));
+        arguments.put(new AShortString("mechanism"), new AShortString(buffer));
+        arguments.put(new AShortString("response"), new ALongString(buffer));
+        arguments.put(new AShortString("locale"), new AShortString(buffer));
 
         //Re-encode the frame and see what we get
         //FIXME: This is not correct

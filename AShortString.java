@@ -22,6 +22,12 @@ public class AShortString extends AMQPNativeType {
     this.buffer = byteArrayBuffer;
   }
 
+  //Constructor from string
+  AShortString(String value) {
+    this.type = AMQPNativeType.Type.SHORT_STRING;
+    this.buffer = new ByteArrayBuffer(value);
+  }
+
   //Encode data type to wire
   public ByteArrayBuffer toWire() {
     AOctet len = new AOctet(buffer.length());

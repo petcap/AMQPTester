@@ -27,6 +27,12 @@ public class ALongString extends AMQPNativeType {
     return ret;
   }
 
+  //Constructor from string
+  ALongString(String value) {
+    this.type = AMQPNativeType.Type.LONG_STRING;
+    this.buffer = new ByteArrayBuffer(value);
+  }
+
   public String toString() {
     return buffer.toString();
   }
