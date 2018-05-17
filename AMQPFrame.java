@@ -44,6 +44,32 @@ public class AMQPFrame {
     this.innerFrame = innerFrame;
   }
 
+  public ByteArrayBuffer toWire() {
+    //Frame format:
+    //Type(1 octet) + Channel(2 octets) + Payload length(4 octets) + Actual payload + 0xCE
+    ByteArrayBuffer ret = new ByteArrayBuffer();
+
+    //Add type to frame
+    ret.put(amqpFrameType.toWire());
+
+    //Add channel
+    ret.put(channel.toWire());
+
+    //Inner frame in wire format
+    ByteArrayBuffer inner = innerFrame.toWire();
+
+    //Add payload length
+    ret.put(new ALongUInt(inner.length()).toWire());
+
+    //Add actual payload
+    ret.put(inner);
+
+    //Add EOP (End of Packet)
+    ret.put(new byte[] {(byte) 0xce });
+
+    return ret;
+  }
+
   //Build an AMQPFrame from a packet received on the wire
   //Expects one complete frame
   public static AMQPFrame build(ByteArrayBuffer frame) throws InvalidFrameException {

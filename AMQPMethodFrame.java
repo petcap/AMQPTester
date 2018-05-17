@@ -29,7 +29,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     this.amqpClass = amqpClass;
     this.amqpMethod = amqpMethod;
 
-    System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
+    //System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
     //System.out.println("Arglist is:");
     //System.out.println(buffer.toHexString());
 
@@ -39,7 +39,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
       //Method: Start-OK
       if (amqpMethod.toInt() == 11) {
         //Print current buffer...
-        System.out.println(buffer.toHexString());
+        //System.out.println(buffer.toHexString());
 
         //Read Client-Properties as a FieldTable
         //Read one field table (Client-properties)
@@ -47,7 +47,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
         //Re-encode the frame and see what we get
         //FIXME: This is not correct
-        System.out.println(arguments.get("Client-Properties").toWire().toHexString());
+        //System.out.println(arguments.get("Client-Properties").toWire().toHexString());
 
         //Debug print
         //System.out.println(arguments.get("Client-Properties").toString());

@@ -32,7 +32,7 @@ public class AFieldTable extends AMQPNativeType {
     //Pop first 4 bytes of the buffer into an ALongUInt
     ALongUInt length = new ALongUInt(byteArrayBuffer);
 
-    System.out.println("Creating new Field Table with byte size: " + length.toInt());
+    //System.out.println("Creating new Field Table with byte size: " + length.toInt());
 
     //Pop the field table payload
     ByteArrayBuffer payload = byteArrayBuffer.pop(length.toLong());
