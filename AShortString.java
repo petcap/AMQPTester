@@ -8,14 +8,15 @@ public class AShortString extends AMQPNativeType {
     AOctet length = new AOctet(byteArrayBuffer);
 
     if (length.toInt() > byteArrayBuffer.length()) {
-      throw new InvalidTypeException("Specified string length is longer than existing buffer");
+      throw new InvalidTypeException("Specified short string length is longer than existing buffer");
     }
 
     this.buffer = byteArrayBuffer.pop(length.toInt());
   }
 
   //Hack just to get another constructor from which we can create short strings
-  //internally
+  //internally, since we want to be able to create a string directly from a
+  //ByteArrayBuffer without specifying the length
   AShortString(int length, ByteArrayBuffer byteArrayBuffer) {
     this.type = AMQPNativeType.Type.SHORT_STRING;
     this.buffer = byteArrayBuffer;

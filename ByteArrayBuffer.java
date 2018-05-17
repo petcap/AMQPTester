@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.nio.*;
 
 public class ByteArrayBuffer {
-  private byte[] buffer;
+  public byte[] buffer;
 
   //Constructor
   ByteArrayBuffer() {
