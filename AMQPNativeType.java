@@ -30,4 +30,23 @@ public class AMQPNativeType {
   public ByteArrayBuffer toWire() {
     return new ByteArrayBuffer();
   }
+
+  //Returns a ByteArrayBuffer of the expected field type,
+  //i.e S for Long String and s for Short String
+  //Throws InvalidTypeException if cannot be included in a field table
+  public ByteArrayBuffer getFieldTableType() throws InvalidTypeException {
+    if (type == Type.LONG_STRING) {
+      return new ByteArrayBuffer((byte) 'S');
+    }
+
+    if (type == Type.BOOLEAN) {
+      return new ByteArrayBuffer((byte) 't');
+    }
+
+    if (type == Type.FIELD_TABLE) {
+      return new ByteArrayBuffer((byte) 'F');
+    }
+
+    throw new InvalidTypeException("Cannot encode native type to Field Table: " + type.name());
+  }
 };

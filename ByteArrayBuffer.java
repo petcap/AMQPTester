@@ -20,6 +20,11 @@ public class ByteArrayBuffer {
   }
 
   //Constructor
+  ByteArrayBuffer(byte b) {
+    buffer = new byte[]{b};
+  }
+
+  //Constructor
   ByteArrayBuffer(String string) {
     buffer = string.getBytes();
   }

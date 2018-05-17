@@ -90,31 +90,45 @@ public class AFieldTable extends AMQPNativeType {
   }
 
   //Encode data for being sent over the network
-  //FIXME: Bad encoding here
   public ByteArrayBuffer toWire() {
-    //Return data
+    //Return data, to be populated
     ByteArrayBuffer ret = new ByteArrayBuffer();
 
     //This will be populated with all data in the Field Table
-    ByteArrayBuffer data = new ByteArrayBuffer();
+    ByteArrayBuffer payload = new ByteArrayBuffer();
 
     //Loop over our members
     for(AShortString key : members.keySet()) {
       //Member to be encoded
       AMQPNativeType val = members.get(key);
 
-      //Put 1 octet length + the key string
-      data.put(key.toWire());
+      //Put name of element, this is always a short string, hence
+      //1 octet length + the string itself
+      payload.put(key.toWire());
 
-      //Put the actual payload, whatever it might be
-      data.put(val.toWire());
+      try {
+        //Put the value type, 1 octet length (for exampel S, s, F, t etc)
+        payload.put(val.getFieldTableType());
+      } catch (InvalidTypeException e) {
+        //FIXME: This should never happen as the AFieldTable should nevre allow
+        //an unsupported type to be encoded in it
+        System.err.println("Unable to encode a data type to wire frame format: " + e.toString());
+      }
+
+      //Put the actual payload
+      payload.put(val.toWire());
     }
 
-    //Calculate Field Table length and add to return buffer
-    ret.put(new ALongUInt(data.toLong()).toWire());
+    //Length header for the Field Table, 4 octets
+    ByteArrayBuffer length = (new ALongUInt(payload.length())).toWire();
+
+    System.out.println("Field table length: " + length.toHexString());
+
+    //Put payload length as 4 octets
+    ret.put(length);
 
     //Add actual payload
-    ret.put(data);
+    ret.put(payload);
 
     return ret;
   }
