@@ -129,7 +129,7 @@ public class Server {
 
           //Are we ready to write data?
           if (selectionKey.isWritable()) {
-            //Get the AMQPConnection associated with this connections
+            //Get the AMQPConnection associated with this connection
             AMQPConnection amqpConnection = (AMQPConnection) selectionKey.attachment();
 
             //Check that we actually have data to write
