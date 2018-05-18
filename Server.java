@@ -96,7 +96,7 @@ public class Server {
 
           //Did we receive some data?
           if (selectionKey.isReadable()) {
-            //Get the AMQPConnection associated with this connections
+            //Get the AMQPConnection associated with this connection
             AMQPConnection amqpConnection = (AMQPConnection) selectionKey.attachment();
 
             //Get the SocketChannel which received data
