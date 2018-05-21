@@ -44,6 +44,7 @@ public class AMQPFrame {
     this.innerFrame = innerFrame;
   }
 
+  //Create a ByteArrayBuffer containing the frame
   public ByteArrayBuffer toWire() {
     //Frame format:
     //Type(1 octet) + Channel(2 octets) + Payload length(4 octets) + Actual payload + 0xCE
@@ -64,10 +65,40 @@ public class AMQPFrame {
     //Add actual payload
     ret.put(inner);
 
-    //Add EOP (End of Packet)
-    ret.put(new byte[] {(byte) 0xce });
+    //Add EOP (End of Packet) byte
+    ret.put(new byte[] { (byte) 0xce });
 
     return ret;
+  }
+
+  //Checks if the ByteArrayBuffer contains one (or more) frame ready to decode
+  //using the build() method. This method only validates that the buffer contains
+  //the complete frame as specified by the frame header length, it does not
+  //validate that the frame is correctly encoded
+  public static boolean hasFullFrame(ByteArrayBuffer byteArrayBuffer) {
+    //Minimal possible length of a frame
+    if (byteArrayBuffer.length() < 8) return false;
+
+    //Make a copy since we do not want to modify the original buffer
+    ByteArrayBuffer frame = byteArrayBuffer.copy();
+
+    //We do not care about the frame type or channel, delete first 3 octets
+    frame.deleteFront(3);
+
+    //Pop the length of the frame
+    ALongUInt length;
+    try {
+      length = new ALongUInt(frame);
+    } catch(InvalidTypeException e) {
+      return false; //Should never happen since we check the length
+    }
+
+    //Calculate the expected length of the buffer
+    //Frame content length + Frame type + Channel + Frame length + Trailing 0xCE
+    long expectedLength = length.toLong() + (long) 1 + (long) 2 + (long) 4 + (long) 1;
+
+    //Check if we have received the complete frame
+    return (byteArrayBuffer.toLong() < expectedLength);
   }
 
   //Build an AMQPFrame from a frame received on the wire
@@ -78,8 +109,12 @@ public class AMQPFrame {
     //Frame type
     AMQPFrameType type = null;
 
-    //Make sure we got at least the frame type + length
-    if (frame.length() < 3) throw new InvalidFrameException("Frame length is too short: " + frame.length());
+    //A frame is at least 8 octets long:
+    //1 octet frame type
+    //2 octet Channel
+    //4 octet frame length
+    //1 octet frame ending 0xCE
+    if (frame.length() < 8) throw new InvalidFrameException("Frame length is too short: " + frame.length());
     //System.out.println("Outer frame: " + frame.toHexString());
 
     //Iterate over all possible frame types and see what type of frame we got
