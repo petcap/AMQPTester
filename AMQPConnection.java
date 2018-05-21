@@ -89,21 +89,27 @@ public class AMQPConnection {
       if (queue_incoming.length() >= 8) {
         if (queue_incoming.equals(AMQP_VALID_HANDSHAKE)) {
           System.out.println("Valid handshake received");
+
+          //Handshake is now complete, update our state
           status = AMQPConnectionState.HANDSHAKE_COMPLETE;
+
+          //Remove the handshake from the queue
           queue_incoming.clear();
 
-          //Create Connection.Start programmatically
+          //Create Connection.Start programmatically and send it to the peer
+
           //Create the arguments
           LinkedHashMap<AShortString, AMQPNativeType> start_arg = new LinkedHashMap<AShortString, AMQPNativeType>();
 
           //Properties of server-properties
+          //FIXME: Include more headers?
           LinkedHashMap<AShortString, AMQPNativeType> server_props = new LinkedHashMap<AShortString, AMQPNativeType>();
           server_props.put(new AShortString("copyright"), new ALongString("Hello World Inc."));
 
           //Add the expected data to the Connection.Start arglist
           start_arg.put(new AShortString("version-major"), new AOctet(0x00));
           start_arg.put(new AShortString("version-minor"), new AOctet(0x09));
-          start_arg.put(new AShortString("server-properties"), new AFieldTable(server_props)); //FIXME
+          start_arg.put(new AShortString("server-properties"), new AFieldTable(server_props));
           start_arg.put(new AShortString("mechanisms"), new ALongString("Helloooo"));
           start_arg.put(new AShortString("locales"), new ALongString("sv-SE"));
 
@@ -112,7 +118,11 @@ public class AMQPConnection {
           AMQPFrame complete_frame = new AMQPFrame(AMQPFrame.AMQPFrameType.METHOD, new AShortUInt(0), start_method_frame);
 
           System.out.println("Sent CONNECTION.START");
+
+          //Now waiting for start-ok
           status = AMQPConnectionState.START_SENT;
+
+          //Write to the TCP buffer
           this.queue_outgoing.put(complete_frame.toWire());
 
         } else {
@@ -147,7 +157,7 @@ public class AMQPConnection {
 
         //System.out.println(queue_incoming.toHexString());
         AMQPFrame frame = AMQPFrame.build(queue_incoming);
-
+        
         //System.out.println(frame.toWire().toHexString());
       } catch (InvalidFrameException e) {
         System.out.println("InvalidFrameException: " + e.toString());
