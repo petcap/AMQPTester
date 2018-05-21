@@ -9,8 +9,9 @@ public class Server {
   //Listening port for incoming connections
   public static int PORT = 5672;
 
-  //Maximum size of read/write buffers
-  public static int SOCKET_BUFFER_SIZE = 1024;
+  //Maximum size of intermediate read/write
+  //This will be the most number of bytes we read in one go
+  public static int SOCKET_BUFFER_SIZE = 4096;
 
   public static void main(String[] args) {
 

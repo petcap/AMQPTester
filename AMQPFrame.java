@@ -103,7 +103,7 @@ public class AMQPFrame {
     System.out.println("hasFullName(): Expected length: " + expectedLength + ", actual: " + byteArrayBuffer.length());
 
     //Check if we have received the complete frame
-    return (expectedLength >= byteArrayBuffer.length());
+    return (expectedLength <= byteArrayBuffer.length());
   }
 
   //Build an AMQPFrame from a frame received on the wire
