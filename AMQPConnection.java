@@ -85,7 +85,7 @@ public class AMQPConnection {
     //Is this a newly connected client?
     if (status == AMQPConnectionState.UNINITIALIZED) {
       //If we have enough data for the handshake in the queue, check
-      //the handshake signature and see if it is AMQP valid
+      //the handshake signature to make sure this is an AMQP client
       if (queue_incoming.length() >= 8) {
         if (queue_incoming.equals(AMQP_VALID_HANDSHAKE)) {
           System.out.println("Valid handshake received");
@@ -116,7 +116,7 @@ public class AMQPConnection {
           this.queue_outgoing.put(complete_frame.toWire());
 
         } else {
-          //Invalid handshake, write the actual handshake
+          //Invalid handshake, write the actual handshake as specified by the documentation
           queue_outgoing.put(AMQP_VALID_HANDSHAKE);
 
           System.out.println("Received invalid handshake");
@@ -134,15 +134,21 @@ public class AMQPConnection {
     if (status == AMQPConnectionState.START_SENT && !queue_incoming.empty()) {
       System.out.println("Got data");
 
-      //FIXME: Add check that we've actually have a complete frame buffered, not just the beginning
+      //Make sure at least one full frame has been received before we attempt
+      //to decode any data
+      if (!AMQPFrame.hasFullFrame(queue_incoming)) {
+        System.out.println("Partial frame received");
+        return;
+      }
+
       try {
         //This builds the frame object and pops exactly the full frame from
         //the queue_incoming buffer
 
-        System.out.println(queue_incoming.toHexString());
+        //System.out.println(queue_incoming.toHexString());
         AMQPFrame frame = AMQPFrame.build(queue_incoming);
 
-        System.out.println(frame.toWire().toHexString());
+        //System.out.println(frame.toWire().toHexString());
       } catch (InvalidFrameException e) {
         System.out.println("InvalidFrameException: " + e.toString());
         //Spec says that any invalid frame should be treated as a fatal error
