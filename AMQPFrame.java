@@ -77,7 +77,9 @@ public class AMQPFrame {
   //validate that the frame is correctly encoded
   public static boolean hasFullFrame(ByteArrayBuffer byteArrayBuffer) {
     //Minimal possible length of a frame
-    if (byteArrayBuffer.length() < 8) return false;
+    if (byteArrayBuffer.length() < 8) {
+      return false;
+    }
 
     //Make a copy since we do not want to modify the original buffer
     ByteArrayBuffer frame = byteArrayBuffer.copy();
@@ -90,6 +92,7 @@ public class AMQPFrame {
     try {
       length = new ALongUInt(frame);
     } catch(InvalidTypeException e) {
+      System.out.println("hasFullName(): Type Exception, should not happen");
       return false; //Should never happen since we check the length
     }
 
@@ -97,8 +100,10 @@ public class AMQPFrame {
     //Frame content length + Frame type + Channel + Frame length + Trailing 0xCE
     long expectedLength = length.toLong() + (long) 1 + (long) 2 + (long) 4 + (long) 1;
 
+    System.out.println("hasFullName(): Expected length: " + expectedLength + ", actual: " + byteArrayBuffer.length());
+
     //Check if we have received the complete frame
-    return (byteArrayBuffer.toLong() < expectedLength);
+    return (expectedLength >= byteArrayBuffer.length());
   }
 
   //Build an AMQPFrame from a frame received on the wire
