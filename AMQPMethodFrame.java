@@ -47,13 +47,12 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("mechanism"), new AShortString(buffer));
         arguments.put(new AShortString("response"), new ALongString(buffer));
         arguments.put(new AShortString("locale"), new AShortString(buffer));
-
-        //Re-encode the frame and see what we get
-        //FIXME: This is not correct
-        //System.out.println(arguments.get("Client-Properties").toWire().toHexString());
-
-        //Debug print
-        //System.out.println(arguments.get("Client-Properties").toString());
+      }
+      //Method: Tune-OK
+      if (amqpMethod.toInt() == 31) {
+        arguments.put(new AShortString("channel-max"), new AShortUInt(buffer));
+        arguments.put(new AShortString("frame-max"), new ALongUInt(buffer));
+        arguments.put(new AShortString("heartbeat"), new AShortUInt(buffer));
       }
     }
   }
@@ -63,6 +62,11 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     String ret = "(Method frame) class/method: " + amqpClass.toInt() + "/" + amqpMethod.toInt() + ", arguments:";
     for(AShortString key : arguments.keySet()) {
       ret += " " + key.toString();
+
+      //We do not want to print field tables recursively
+      if (arguments.get(key).type != AMQPNativeType.Type.FIELD_TABLE) {
+        ret += "(" + arguments.get(key).toString() + ")";
+      }
     }
     return ret;
   }

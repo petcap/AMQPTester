@@ -68,6 +68,15 @@ public class AMQPTesterSimple extends AMQPTester {
         if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 11) {
           //Send Connection.Tune
 
+          //Arguments to include in the method call
+          LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+          arguments.put(new AShortString("channel-max"), new AShortUInt(10));
+          arguments.put(new AShortString("frame-max"), new ALongUInt(1000));
+          arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
+
+          //Send connection.tune
+          queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
+
         }
 
       } else { //We are not expecting any other frame types...
@@ -79,6 +88,7 @@ public class AMQPTesterSimple extends AMQPTester {
   }
 
   //Currently triggered upon modifying the incoming frame queue
+  //May be periodically triggered in the future
   public void updateState() {
     //Are we initializing?
     if (state == State.INITIALIZING) updateInitializing();

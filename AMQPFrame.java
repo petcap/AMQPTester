@@ -100,7 +100,7 @@ public class AMQPFrame {
     //Frame content length + Frame type + Channel + Frame length + Trailing 0xCE
     long expectedLength = length.toLong() + (long) 1 + (long) 2 + (long) 4 + (long) 1;
 
-    System.out.println("hasFullName(): Expected length: " + expectedLength + ", actual: " + byteArrayBuffer.length());
+    //System.out.println("hasFullFrame(): Expected length: " + expectedLength + ", actual: " + byteArrayBuffer.length());
 
     //Check if we have received the complete frame
     return (expectedLength <= byteArrayBuffer.length());
