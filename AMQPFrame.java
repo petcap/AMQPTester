@@ -162,7 +162,7 @@ public class AMQPFrame {
     //Pop the frame contents
     ByteArrayBuffer framePayload = frame.pop(length.toInt());
 
-    //Check that we have an EOP (End of Packet) bytes
+    //Check that we have an EOP (End of Packet) byte
     if (!frame.pop(1).equals(new ByteArrayBuffer(new byte[]{(byte) 0xCE}))) {
       throw new InvalidFrameException("Frame does not end with 0xCE");
     }
