@@ -60,7 +60,11 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
   //For debugging
   public String toString() {
-    return "(method frame) class/method: " + amqpClass.toInt() + "/" + amqpMethod.toInt() + ", argument no: " + arguments.size();
+    String ret = "(Method frame) class/method: " + amqpClass.toInt() + "/" + amqpMethod.toInt() + ", arguments:";
+    for(AShortString key : arguments.keySet()) {
+      ret += " " + key.toString();
+    }
+    return ret;
   }
 
   //Programmatically build a complete method frame in one go
