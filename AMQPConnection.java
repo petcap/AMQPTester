@@ -103,7 +103,7 @@ public class AMQPConnection {
           //Initialize the tester
           //FIXME: Initialize different testers in the future depending on
           //command line arguments we receive
-          tester = new AMQPTesterSimple();
+          tester = new AMQPTesterSimple(this);
 
           //The connection is now initialized and ready to be taken over by the AMQPTester
           status = AMQPConnectionState.HANDSHAKE_COMPLETE;

@@ -5,6 +5,9 @@
 //AMQPFrames
 
 public class AMQPTester {
+  AMQPTester(){}
+  AMQPTester(AMQPConnection amqpConnection){}
+
   //Deliver a frame received over the wire
   public void deliverFrame(AMQPFrame amqpFrame){}
 

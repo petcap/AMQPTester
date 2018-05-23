@@ -58,6 +58,26 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     }
   }
 
+  //For debugging
+  public String toString() {
+    return "(method frame) class/method: " + amqpClass.toInt() + "/" + amqpMethod.toInt() + ", argument no: " + arguments.size();
+  }
+
+  //Programmatically build a complete method frame in one go
+  public static AMQPFrame build(AShortUInt aclass, AShortUInt amethod, LinkedHashMap<AShortString, AMQPNativeType> args) {
+
+    //Build the inner frame
+    AMQPMethodFrame method_frame = new AMQPMethodFrame(aclass, amethod, args);
+
+    //Build the complete frame
+    return new AMQPFrame(AMQPFrame.AMQPFrameType.METHOD, new AShortUInt(0), method_frame);
+  }
+
+  //Programmatically build a complete method frame in one go
+  public static AMQPFrame build(int aclass, int amethod, LinkedHashMap<AShortString, AMQPNativeType> args) {
+    return build(new AShortUInt(aclass), new AShortUInt(amethod), args);
+  }
+
   //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
   public ByteArrayBuffer toWire() {
     //To be populated with the frame
