@@ -137,16 +137,6 @@ public class AMQPConnection {
           //Deliver the frame object to the tester
           tester.deliverFrame(frame);
 
-          //The tester (maybe) wants to deliver a frame back to the client
-          AMQPFrame reply = tester.getFrame();
-
-          //Read all packets from the tester and convert them to low level frames
-          //and queue them up in the TCP buffer
-          while (reply != null) {
-            this.queue_outgoing.put(reply.toWire());
-            reply = tester.getFrame();
-          }
-
         } catch (InvalidFrameException e) {
           System.out.println("InvalidFrameException: " + e.toString());
           //Spec says that any invalid frame should be treated as a fatal error
@@ -158,7 +148,16 @@ public class AMQPConnection {
           //data in the queue and then closing the TCP connection
           status = AMQPConnectionState.DISCONNECT;
         }
+      }
 
+      //The tester (maybe) wants to deliver a frame back to the client
+      AMQPFrame reply = tester.getFrame();
+
+      //Read all packets from the tester and convert them to low level frames
+      //and queue them up in the TCP buffer
+      while (reply != null) {
+        this.queue_outgoing.put(reply.toWire());
+        reply = tester.getFrame();
       }
     }
   }

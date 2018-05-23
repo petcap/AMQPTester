@@ -5,10 +5,14 @@ import java.util.*;
 
 public class AMQPTesterSimple extends AMQPTester {
 
+  //Queue of outgoing frames
+  LinkedList<AMQPFrame> queue_outgoing = new LinkedList<AMQPFrame>();
 
   //Constructor, we've just completed the handshake and the client now expects a
   //connection.start object
   AMQPTesterSimple() {
+    System.out.println("AMQPTesterSimple initialized");
+
     //Arguments in Connection.Start
     LinkedHashMap<AShortString, AMQPNativeType> start_arg = new LinkedHashMap<AShortString, AMQPNativeType>();
 
@@ -22,21 +26,31 @@ public class AMQPTesterSimple extends AMQPTester {
     start_arg.put(new AShortString("version-minor"), new AOctet(0x09));
     start_arg.put(new AShortString("server-properties"), new AFieldTable(server_props));
     start_arg.put(new AShortString("mechanisms"), new ALongString("Helloooo"));
-    start_arg.put(new AShortString("locales"), new ALongString("sv-SE"));
+    start_arg.put(new AShortString("locales"), new ALongString("en-US"));
 
-    AMQPMethodFrame start_method_frame = new AMQPMethodFrame(new AShortUInt(10), new AShortUInt(10), start_arg);
+    //Build the inner frame
+    AMQPMethodFrame method_frame = new AMQPMethodFrame(new AShortUInt(10), new AShortUInt(10), start_arg);
 
-    AMQPFrame complete_frame = new AMQPFrame(AMQPFrame.AMQPFrameType.METHOD, new AShortUInt(0), start_method_frame);
+    //Build the complete frame
+    AMQPFrame complete_frame = new AMQPFrame(AMQPFrame.AMQPFrameType.METHOD, new AShortUInt(0), method_frame);
 
-    System.out.println("Sent CONNECTION.START");
+    //Queue the frame up to be sent to the client
+    queue_outgoing.add(complete_frame);
   }
 
-  void deliverFrame(AMQPFrame amqpFrame) {
-    System.out.println("AMQPTesterSimple got a frame");
+  //Called when a frame has been received and decoded over the wire
+  public void deliverFrame(AMQPFrame amqpFrame) {
+    System.out.println("AMQPTesterSimple got a frame: " + amqpFrame.amqpFrameType.name());
   }
 
-  AMQPFrame getFrame() {
-    System.out.println("AMQPTesterSimple delievered a frame");
+  //Get a frame from the internal queue
+  //Returns null if no frames are available
+  public AMQPFrame getFrame() {
+    if (queue_outgoing.size() != 0) {
+      System.out.println("AMQPTesterSimple sent a frame");
+      return queue_outgoing.pop();
+    }
+
     return null;
   }
 };
