@@ -1,3 +1,5 @@
+import java.util.*;
+
 //Class represeting a type in AMQP, such as long-string, short-string, long, long-long etc
 //Inherited by other subclasses
 public class AShortString extends AMQPNativeType {
@@ -36,6 +38,10 @@ public class AShortString extends AMQPNativeType {
     ByteArrayBuffer ret = len.toWire();
     ret.put(buffer);
     return ret;
+  }
+
+  public boolean equals(AShortString other) {
+    return Arrays.equals(this.buffer.buffer, other.buffer.buffer);
   }
 
   public String toString() {

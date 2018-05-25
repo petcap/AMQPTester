@@ -75,6 +75,18 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("arguments"), new AFieldTable(buffer));
       }
     }
+
+    //Class: Basic
+    if (amqpClass.toInt() == 60) {
+      //Method: Consume
+      if (amqpMethod.toInt() == 20) {
+        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer)); //Ticket?
+        arguments.put(new AShortString("queue"), new AShortString(buffer));
+        arguments.put(new AShortString("consumer-tag"), new AShortString(buffer));
+        arguments.put(new AShortString("setting-bits"), new AOctet(buffer));
+        arguments.put(new AShortString("arguments"), new AFieldTable(buffer));
+      }
+    }
   }
 
   //For debugging
@@ -91,6 +103,18 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
       }
     }
     return ret;
+  }
+
+  //Get a single argument from the Method frame
+  //Returns null of no such argument exists
+  public AMQPNativeType getArg(String name) {
+    for(AShortString key : arguments.keySet()) {
+      if (key.equals(new AShortString(name))) {
+        return arguments.get(key);
+      }
+    }
+    System.err.println("WARNING: Returning null on getArg() name=" + name);
+    return null;
   }
 
   //Build an empty (i.e. with no arguments) frame

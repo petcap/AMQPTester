@@ -138,19 +138,43 @@ public class AMQPTesterSimple extends AMQPTester {
 
         //Debugging
         System.out.println("Sending Channel.Open-OK");
-        System.out.println(outgoing.toWire().toHexString());
       }
 
       //Queue.declare
       if (inner.amqpClass.toInt() == 50 && inner.amqpMethod.toInt() == 10) {
-        //Build declare-ok
+        //List of arguments to be returned
         LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
-        arguments.put(new AShortString("channel-max"), new AShortUInt(1));
-        arguments.put(new AShortString("frame-max"), new ALongUInt(1000));
-        arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
 
-        //Send connection.tune
-        queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
+        //Queue name received from the client
+        AShortString queue_name = (AShortString) inner.getArg("queue-name");
+
+        //Add arguments
+        arguments.put(new AShortString("queue"), queue_name);
+        arguments.put(new AShortString("message-count"), new ALongUInt(0));
+        arguments.put(new AShortString("consumer-count"), new ALongUInt(0));
+
+        //Build frame and set same channel
+        AMQPFrame outgoing = AMQPMethodFrame.build(50, 11, arguments);
+        outgoing.channel = frame.channel;
+
+        //Send queue.declare-ok
+        queue_outgoing.add(outgoing);
+
+        System.out.println("Sending Queue.Declare-OK");
+      }
+
+      //Basic.consume
+      if (inner.amqpClass.toInt() == 60 && inner.amqpMethod.toInt() == 20) {
+        //Build frame
+        //Short string = consumer ID
+        AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("HelloWorld"));
+
+        //Set same channel
+        outgoing.channel = frame.channel;
+
+        //Send
+        System.out.println("Sending Basic.Consume-OK");
+        System.out.println(outgoing.toWire().toHexString());
       }
     }
   }
