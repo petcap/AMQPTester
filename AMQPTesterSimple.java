@@ -63,7 +63,7 @@ public class AMQPTesterSimple extends AMQPTester {
       if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.METHOD) {
         //Get the inner frame, which is an AMQPMethodFrame in this case
         AMQPMethodFrame inner = (AMQPMethodFrame) frame.innerFrame;
-        System.out.println("AMQPTesterSimple received: " + inner.toString());
+        System.out.println("Received: " + inner.toString());
 
         //Start-OK
         if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 11) {
