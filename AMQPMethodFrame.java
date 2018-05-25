@@ -64,6 +64,17 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("reserved-1"), new AOctet(buffer));
       }
     }
+
+    //Class: Queue
+    if (amqpClass.toInt() == 50) {
+      //Method: Declare
+      if (amqpMethod.toInt() == 10) {
+        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer));
+        arguments.put(new AShortString("queue-name"), new AShortString(buffer));
+        arguments.put(new AShortString("setting-bits"), new AOctet(buffer));
+        arguments.put(new AShortString("arguments"), new AFieldTable(buffer));
+      }
+    }
   }
 
   //For debugging

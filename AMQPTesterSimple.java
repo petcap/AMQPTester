@@ -127,8 +127,11 @@ public class AMQPTesterSimple extends AMQPTester {
       //Channel.open
       if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 10) {
         //Build the channel.open-ok frame
-        //Arguments: Channel, class, method, args
-        AMQPFrame outgoing = AMQPMethodFrame.build(1, 20, 11, new ALongUInt(0));
+        //Arguments: class, method, args (arg in this case is reserved)
+        AMQPFrame outgoing = AMQPMethodFrame.build(20, 11, new ALongUInt(0));
+
+        //Reply on same channel as we got the message on
+        outgoing.channel = frame.channel;
 
         //Queue frame to be sent
         queue_outgoing.add(outgoing);
@@ -136,6 +139,18 @@ public class AMQPTesterSimple extends AMQPTester {
         //Debugging
         System.out.println("Sending Channel.Open-OK");
         System.out.println(outgoing.toWire().toHexString());
+      }
+
+      //Queue.declare
+      if (inner.amqpClass.toInt() == 50 && inner.amqpMethod.toInt() == 10) {
+        //Build declare-ok
+        LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+        arguments.put(new AShortString("channel-max"), new AShortUInt(1));
+        arguments.put(new AShortString("frame-max"), new ALongUInt(1000));
+        arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
+
+        //Send connection.tune
+        queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
       }
     }
   }
