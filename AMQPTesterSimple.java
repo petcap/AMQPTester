@@ -71,7 +71,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
           //Arguments to include in the method call
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
-          arguments.put(new AShortString("channel-max"), new AShortUInt(10));
+          arguments.put(new AShortString("channel-max"), new AShortUInt(1));
           arguments.put(new AShortString("frame-max"), new ALongUInt(1000));
           arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
 
@@ -119,9 +119,23 @@ public class AMQPTesterSimple extends AMQPTester {
       if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 40) {
         //Maybe check the path in the future if needed?
         //Send connection.open-ok
-        System.out.println((AMQPMethodFrame.build(10, 41)).toWire().toHexString());
-        queue_outgoing.add(AMQPMethodFrame.build(10, 41));
+        //The supplied octet is the reserved field
+        queue_outgoing.add(AMQPMethodFrame.build(10, 41, new AOctet(0x00)));
         System.out.println("Sending Connection.Open-OK");
+      }
+
+      //Channel.open
+      if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 10) {
+        //Build the channel.open-ok frame
+        //Arguments: Channel, class, method, args
+        AMQPFrame outgoing = AMQPMethodFrame.build(1, 20, 11, new ALongUInt(0));
+
+        //Queue frame to be sent
+        queue_outgoing.add(outgoing);
+
+        //Debugging
+        System.out.println("Sending Channel.Open-OK");
+        System.out.println(outgoing.toWire().toHexString());
       }
     }
   }
