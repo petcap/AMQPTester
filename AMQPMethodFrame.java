@@ -54,6 +54,13 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("frame-max"), new ALongUInt(buffer));
         arguments.put(new AShortString("heartbeat"), new AShortUInt(buffer));
       }
+
+      //Method: Connection-Open
+      if (amqpMethod.toInt() == 40) {
+        arguments.put(new AShortString("path"), new AShortString(buffer));
+        arguments.put(new AShortString("reserved-1"), new AOctet(buffer));
+        arguments.put(new AShortString("reserved-2"), new AOctet(buffer));
+      }
     }
   }
 
@@ -71,6 +78,16 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
       }
     }
     return ret;
+  }
+
+  //Build an empty (i.e. with no arguments) frame
+  public static AMQPFrame build(AShortUInt aclass, AShortUInt amethod) {
+    return build(aclass, amethod, new LinkedHashMap<AShortString, AMQPNativeType>());
+  }
+
+  //Build an empty (i.e. with no arguments) frame
+  public static AMQPFrame build(int aclass, int amethod) {
+    return build(aclass, amethod, new LinkedHashMap<AShortString, AMQPNativeType>());
   }
 
   //Programmatically build a complete method frame in one go

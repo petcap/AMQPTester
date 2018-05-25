@@ -50,7 +50,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
     //Queue the frame up to be sent to the client
     queue_outgoing.add(start_frame);
-    System.out.println("Sending connection.start");
+    System.out.println("Sending Connection.Start");
   }
 
   //Called when a frame is received and we are still initalizing
@@ -77,7 +77,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
           //Send connection.tune
           queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
-          System.out.println("Sending connection.tune");
+          System.out.println("Sending Connection.Tune");
         }
 
         //Connection.Tune-ok
@@ -97,8 +97,33 @@ public class AMQPTesterSimple extends AMQPTester {
   //Currently triggered upon modifying the incoming frame queue
   //May be periodically triggered in the future
   public void updateState() {
-    //Are we initializing?
-    if (state == State.INITIALIZING) updateInitializing();
+    //Are we initializing? This is handeled separately to make the code more clean
+    if (state == State.INITIALIZING) {
+      updateInitializing();
+      return;
+    }
+
+    //Make sure that we have incoming data
+    if (queue_incoming.size() == 0) return;
+
+    AMQPFrame frame = queue_incoming.pop();
+
+    //Did we receive a Method frame?
+    if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.METHOD) {
+
+      //Get the inner frame that contains all important frame data
+      AMQPMethodFrame inner = (AMQPMethodFrame) frame.innerFrame;
+      System.out.println("AMQPTesterSimple(inited) received: " + inner.toString());
+
+      //Connection.open
+      if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 40) {
+        //Maybe check the path in the future if needed?
+        //Send connection.open-ok
+        System.out.println((AMQPMethodFrame.build(10, 41)).toWire().toHexString());
+        queue_outgoing.add(AMQPMethodFrame.build(10, 41));
+        System.out.println("Sending Connection.Open-OK");
+      }
+    }
   }
 
   //Called when a frame has been received and decoded over the wire
