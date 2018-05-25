@@ -125,7 +125,7 @@ public class AMQPFrame {
     //Iterate over all possible frame types and see what type of frame we got
     for(AMQPFrameType t : AMQPFrameType.values()) {
       if (t.get() == frame.getByte(0)) {
-        System.out.println("Building frame object, method: " + t.name());
+        //System.out.println("Building frame object, method: " + t.name());
         type = t; //Correct type
         break;
       }
@@ -151,8 +151,8 @@ public class AMQPFrame {
     }
 
     //Debug frame length and payload length
-    System.out.println("Frame received on channel: " + channel.toString());
-    System.out.println("Frame contains payload length: " + length.toString());
+    //System.out.println("Frame received on channel: " + channel.toString());
+    //System.out.println("Frame contains payload length: " + length.toString());
 
     //Check that the buffered payload length is long enough
     if (frame.length() < 1 + length.toInt()) { //Add 1 because of ending trailer byte 0xCE

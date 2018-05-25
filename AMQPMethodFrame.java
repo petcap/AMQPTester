@@ -28,7 +28,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     this.amqpClass = amqpClass;
     this.amqpMethod = amqpMethod;
 
-    System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
+    //System.out.println("Creating new AMQPMethodFrame, class: " + amqpClass.toString() + ", method: " + amqpMethod.toString());
     //System.out.println("Arglist is:");
     //System.out.println(buffer.toHexString());
 
@@ -59,13 +59,15 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
   //For debugging
   public String toString() {
-    String ret = "(Method frame) class/method: " + amqpClass.toInt() + "/" + amqpMethod.toInt() + ", arguments:";
+    String ret = "Method frame: " + amqpClass.toInt() + "/" + amqpMethod.toInt() + ", arguments:\n";
     for(AShortString key : arguments.keySet()) {
-      ret += " " + key.toString();
+      ret += " * " + key.toString();
 
       //We do not want to print field tables recursively
       if (arguments.get(key).type != AMQPNativeType.Type.FIELD_TABLE) {
-        ret += "(" + arguments.get(key).toString() + ")";
+        ret += " -> " + arguments.get(key).toString() + "\n";
+      } else {
+        ret += " -> (Not printing recursively)\n";
       }
     }
     return ret;

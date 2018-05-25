@@ -13,7 +13,8 @@ public class AMQPTesterSimple extends AMQPTester {
 
   //Tester state enumeration
   public enum State {
-    INITIALIZING //Connection.Start, Connection.Tune
+    INITIALIZING, //Connection.Start, Connection.Tune
+    HANDSHAKE_COMPLETE, //Connection.Start and Tune complete
   }
 
   //Associated AMQPConnection
@@ -25,7 +26,6 @@ public class AMQPTesterSimple extends AMQPTester {
   //Constructor, we've just completed the handshake and the client now expects a
   //connection.start object
   AMQPTesterSimple(AMQPConnection amqpConnection) {
-    System.out.println("AMQPTesterSimple initialized");
 
     //Store reference to the AMQPConnection we are working with
     this.amqpConnection = amqpConnection;
@@ -50,6 +50,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
     //Queue the frame up to be sent to the client
     queue_outgoing.add(start_frame);
+    System.out.println("Sending connection.start");
   }
 
   //Called when a frame is received and we are still initalizing
@@ -76,7 +77,13 @@ public class AMQPTesterSimple extends AMQPTester {
 
           //Send connection.tune
           queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
+          System.out.println("Sending connection.tune");
+        }
 
+        //Connection.Tune-ok
+        if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 31) {
+          state = State.HANDSHAKE_COMPLETE;
+          System.out.println("Handshake phase complete");
         }
 
       } else { //We are not expecting any other frame types...
@@ -108,7 +115,7 @@ public class AMQPTesterSimple extends AMQPTester {
   //Returns null if no frames are available
   public AMQPFrame getFrame() {
     if (queue_outgoing.size() != 0) {
-      System.out.println("AMQPTesterSimple sent a frame");
+      //System.out.println("AMQPTesterSimple sent a frame");
       return queue_outgoing.pop();
     }
 
