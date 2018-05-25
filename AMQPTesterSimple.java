@@ -86,7 +86,7 @@ public class AMQPTesterSimple extends AMQPTester {
           System.out.println("Handshake phase complete");
         }
 
-      } else { //We are not expecting any other frame types...
+      } else { //We are not expecting any non-method frames here
         //Invalid frame, disconnect the client
         amqpConnection.status = AMQPConnection.AMQPConnectionState.DISCONNECT;
         System.out.println("AMQPTesterSimple: Received bad frame during initialization");
