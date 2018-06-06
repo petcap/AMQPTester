@@ -36,11 +36,24 @@ public class AShortUInt extends AMQPNativeType {
   }
 
   //Get value as a boolean array
+  public String toFlagString() {
+    //To be returned
+    String ret = Long.toBinaryString(value);
+
+    //Make sure we build the string so that it is exacly 16 chars long
+    while (ret.length() < 16) {
+      ret = "0" + ret;
+    }
+
+    return ret;
+  }
+
+  //Get value as a boolean array
   public boolean[] getFlags() {
     //Return value
     boolean[] ret = new boolean[16];
 
-    byte[] tmp = Long.toBinaryString(value).getBytes();
+    byte[] tmp = toFlagString().getBytes();
 
     for(int i=0; i!=16; ++i) {
       ret[i] = (tmp[1] == '1');
@@ -50,10 +63,9 @@ public class AShortUInt extends AMQPNativeType {
   }
 
   //Get a specific bit mask flag
-  //0 = LSB
-  //15 = MSB
+  //15 = LSB
+  //0 = MSB
   public boolean getFlag(int flag) {
-    flag = 15 - flag;
     return getFlags()[flag];
   }
 

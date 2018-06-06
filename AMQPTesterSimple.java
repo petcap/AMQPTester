@@ -181,6 +181,7 @@ public class AMQPTesterSimple extends AMQPTester {
     //Did we receive a Header frame?
     if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.HEADER) {
       System.out.println("Received header frame in TesterSimple");
+      System.out.println(frame.innerFrame.toString());
     }
   }
 
