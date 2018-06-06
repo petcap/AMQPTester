@@ -177,6 +177,11 @@ public class AMQPTesterSimple extends AMQPTester {
         System.out.println(outgoing.toWire().toHexString());
       }
     }
+
+    //Did we receive a Header frame?
+    if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.HEADER) {
+      System.out.println("Received header frame in TesterSimple");
+    }
   }
 
   //Called when a frame has been received and decoded over the wire

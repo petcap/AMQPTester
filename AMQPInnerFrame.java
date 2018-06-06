@@ -14,7 +14,8 @@ public class AMQPInnerFrame {
       //This method consumes data from the ByteArrayBuffer, make sure to copy data
       //if you need to keep it for other purposes
       public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrame.AMQPFrameType frameType) throws InvalidFrameException {
-        //Do we want to create a Method frame?
+
+        //Do we want to build a Method frame?
         if (frameType == AMQPFrame.AMQPFrameType.METHOD) {
           //System.out.println("AMQPInnerFrame building new Method frame from this buffer:");
           //System.out.println(byteArrayBuffer.toHexString());
@@ -49,8 +50,36 @@ public class AMQPInnerFrame {
           return amqpMethodFrame;
         }
 
-        //Should never be reached
-        throw new InvalidFrameException("Unknown frame type received (probably a bug in the tester code)");
+        //Do we want to build a Method frame?
+        if (frameType == AMQPFrame.AMQPFrameType.HEADER) {
+          //To be created
+          AMQPHeaderFrame amqpHeaderFrame = null;
+
+          //Class ID
+          AShortUInt amqpClass = null;
+
+          //Read class ID
+          try {
+            amqpClass = new AShortUInt(byteArrayBuffer); //Pop 2 bytes
+          } catch (InvalidTypeException e) {
+            throw new InvalidFrameException("Failed to build header frame class ID: " + e.toString());
+          }
+
+          //Attempt to build the frame object
+          try {
+            amqpHeaderFrame = new AMQPHeaderFrame(
+            amqpClass,
+            byteArrayBuffer
+            );
+          } catch (InvalidTypeException e) {
+            throw new InvalidFrameException("Failed to build header frame, invalid encoding: " + e.toString());
+          }
+
+          return amqpHeaderFrame;
+        }
+
+        //Should never be reached, as all three possible frame types are created above
+        throw new InvalidFrameException("Unknown frame type received (probably a bug in the tester code) : " + frameType.name());
       }
 
       //Output data to wire

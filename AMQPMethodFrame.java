@@ -86,6 +86,14 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("setting-bits"), new AOctet(buffer));
         arguments.put(new AShortString("arguments"), new AFieldTable(buffer));
       }
+
+      //Method: Publish
+      if (amqpMethod.toInt() == 40) {
+        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer)); //Ticket? Short uint
+        arguments.put(new AShortString("exchange-name"), new AShortString(buffer)); //Empty = default exchange
+        arguments.put(new AShortString("routing-key"), new AShortString(buffer));
+        arguments.put(new AShortString("mandatory"), new AOctet(buffer)); //LSB: Mandatory, Bit2: Immediate
+      }
     }
   }
 
