@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-public class AMQPHeaderFrame extends AMQPInnerFrame {
+public class AMQPBodyFrame extends AMQPInnerFrame {
   //Header class ID
   public AShortUInt amqpClass;
 
@@ -32,7 +32,7 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   //}
 
   //Constructor for creating frame from wire
-  AMQPHeaderFrame(AShortUInt amqpClass, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
+  AMQPBodyFrame(AShortUInt amqpClass, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
     //Provided class
     this.amqpClass = amqpClass;
 

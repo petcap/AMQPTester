@@ -50,7 +50,7 @@ public class AMQPInnerFrame {
           return amqpMethodFrame;
         }
 
-        //Do we want to build a Method frame?
+        //Do we want to build a Header frame?
         if (frameType == AMQPFrame.AMQPFrameType.HEADER) {
           //To be created
           AMQPHeaderFrame amqpHeaderFrame = null;
@@ -76,6 +76,11 @@ public class AMQPInnerFrame {
           }
 
           return amqpHeaderFrame;
+        }
+
+        //Do we want to build a Body frame?
+        if (frameType == AMQPFrame.AMQPFrameType.BODY) {
+          //TODO: Implement body frames
         }
 
         //Should never be reached, as all three possible frame types are created above
