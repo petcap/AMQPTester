@@ -49,20 +49,24 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
 
     //Read all set flag values into the properties...
     //TODO: Make sure this works properly
-    if (flags.getFlag(0)) properties.put(new AShortString("content-type"), new AShortString(buffer));
-    if (flags.getFlag(1)) properties.put(new AShortString("content-encoding"), new AShortString(buffer));
-    if (flags.getFlag(2)) properties.put(new AShortString("headers"), new AFieldTable(buffer)); //Fixme: Correct type?
-    if (flags.getFlag(3)) properties.put(new AShortString("delivery-mode"), new AOctet(buffer));
-    if (flags.getFlag(4)) properties.put(new AShortString("priority"), new AOctet(buffer));
-    if (flags.getFlag(5)) properties.put(new AShortString("correlation-id"), new AShortString(buffer));
-    if (flags.getFlag(6)) properties.put(new AShortString("reply-to"), new AShortString(buffer));
-    if (flags.getFlag(7)) properties.put(new AShortString("expiration"), new AShortString(buffer));
-    if (flags.getFlag(8)) properties.put(new AShortString("message-id"), new AShortString(buffer));
-    if (flags.getFlag(9)) properties.put(new AShortString("timestamp"), new ALongLongUInt(buffer));
-    if (flags.getFlag(10)) properties.put(new AShortString("type"), new AShortString(buffer));
-    if (flags.getFlag(11)) properties.put(new AShortString("user-id"), new AShortString(buffer));
-    if (flags.getFlag(12)) properties.put(new AShortString("app-id"), new AShortString(buffer));
-    if (flags.getFlag(13)) properties.put(new AShortString("reserved"), new AShortString(buffer));
+
+    //Read properties for the Basic class
+    if (amqpClass.equals(new AShortUInt(60))) {
+      if (flags.getFlag(0)) properties.put(new AShortString("content-type"), new AShortString(buffer));
+      if (flags.getFlag(1)) properties.put(new AShortString("content-encoding"), new AShortString(buffer));
+      if (flags.getFlag(2)) properties.put(new AShortString("headers"), new AFieldTable(buffer)); //Fixme: Correct type?
+      if (flags.getFlag(3)) properties.put(new AShortString("delivery-mode"), new AOctet(buffer));
+      if (flags.getFlag(4)) properties.put(new AShortString("priority"), new AOctet(buffer));
+      if (flags.getFlag(5)) properties.put(new AShortString("correlation-id"), new AShortString(buffer));
+      if (flags.getFlag(6)) properties.put(new AShortString("reply-to"), new AShortString(buffer));
+      if (flags.getFlag(7)) properties.put(new AShortString("expiration"), new AShortString(buffer));
+      if (flags.getFlag(8)) properties.put(new AShortString("message-id"), new AShortString(buffer));
+      if (flags.getFlag(9)) properties.put(new AShortString("timestamp"), new ALongLongUInt(buffer));
+      if (flags.getFlag(10)) properties.put(new AShortString("type"), new AShortString(buffer));
+      if (flags.getFlag(11)) properties.put(new AShortString("user-id"), new AShortString(buffer));
+      if (flags.getFlag(12)) properties.put(new AShortString("app-id"), new AShortString(buffer));
+      if (flags.getFlag(13)) properties.put(new AShortString("reserved"), new AShortString(buffer));
+    }
 
 
   }
