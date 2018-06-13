@@ -42,6 +42,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("response"), new ALongString(buffer));
         arguments.put(new AShortString("locale"), new AShortString(buffer));
       }
+
       //Method: Tune-OK
       if (amqpMethod.toInt() == 31) {
         arguments.put(new AShortString("channel-max"), new AShortUInt(buffer));
@@ -55,6 +56,14 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
         arguments.put(new AShortString("reserved-1"), new AOctet(buffer));
         arguments.put(new AShortString("reserved-2"), new AOctet(buffer));
       }
+
+      //Method: Close
+      if (amqpMethod.toInt() == 50) {
+        arguments.put(new AShortString("reply-code"), new AShortUInt(buffer));
+        arguments.put(new AShortString("reply-text"), new AShortString(buffer));
+        arguments.put(new AShortString("class-id"), new AShortUInt(buffer));
+        arguments.put(new AShortString("method-id"), new AShortUInt(buffer));
+      }
     }
 
     //Class: Connection
@@ -62,6 +71,14 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
       //Method: Open
       if (amqpMethod.toInt() == 10) {
         arguments.put(new AShortString("reserved-1"), new AOctet(buffer));
+      }
+
+      //Method: Close
+      if (amqpMethod.toInt() == 40) {
+        arguments.put(new AShortString("reply-code"), new AShortUInt(buffer));
+        arguments.put(new AShortString("reply-text"), new AShortString(buffer));
+        arguments.put(new AShortString("class-id"), new AShortUInt(buffer));
+        arguments.put(new AShortString("method-id"), new AShortUInt(buffer));
       }
     }
 

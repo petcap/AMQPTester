@@ -124,6 +124,15 @@ public class AMQPTesterSimple extends AMQPTester {
         System.out.println("Sending Connection.Open-OK");
       }
 
+      //Connection.close
+      if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 50) {
+        //Maybe check the path in the future if needed?
+        //Send connection.open-ok
+        //The supplied octet is the reserved field
+        queue_outgoing.add(AMQPMethodFrame.build(10, 51));
+        System.out.println("Sending Connection.Close-OK");
+      }
+
       //Channel.open
       if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 10) {
         //Build the channel.open-ok frame
@@ -138,6 +147,21 @@ public class AMQPTesterSimple extends AMQPTester {
 
         //Debugging
         System.out.println("Sending Channel.Open-OK");
+      }
+
+      //Channel.close
+      if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 40) {
+        //Prepare channel.close-ok
+        AMQPFrame outgoing = AMQPMethodFrame.build(20, 41, new ALongUInt(0));
+
+        //Reply on same channel as we got the message on
+        outgoing.channel = frame.channel;
+
+        //Queue frame to be sent
+        queue_outgoing.add(outgoing);
+
+        //Debugging
+        System.out.println("Sending Channel.Close-OK");
       }
 
       //Queue.declare
@@ -181,6 +205,12 @@ public class AMQPTesterSimple extends AMQPTester {
     //Did we receive a Header frame?
     if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.HEADER) {
       System.out.println("Received header frame in TesterSimple");
+      System.out.println(frame.innerFrame.toString());
+    }
+
+    //Did we receive a Body frame?
+    if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.BODY) {
+      System.out.println("Received body frame in TesterSimple, data:");
       System.out.println(frame.innerFrame.toString());
     }
   }

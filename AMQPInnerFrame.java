@@ -80,7 +80,7 @@ public class AMQPInnerFrame {
 
         //Do we want to build a Body frame?
         if (frameType == AMQPFrame.AMQPFrameType.BODY) {
-          System.err.println("Got a body frame:\n" + byteArrayBuffer.toHexString());
+          //System.err.println("Got a body frame:\n" + byteArrayBuffer.toHexString());
           AMQPBodyFrame amqpBodyFrame = null;
 
           //Attempt to build the body frame
