@@ -15,6 +15,16 @@ public class ALongLongUInt extends AMQPNativeType {
     this.value = ByteArrayBuffer.bytesToLong(this.buffer.get());
   }
 
+  ALongLongUInt(long value) {
+    this.type = AMQPNativeType.Type.LONGLONG_UINT;
+    this.value = value;
+  }
+
+  ALongLongUInt(int value) {
+    this.type = AMQPNativeType.Type.LONGLONG_UINT;
+    this.value = (long) value;
+  }
+
   public long toLong() {
     return value;
   }

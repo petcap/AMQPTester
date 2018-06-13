@@ -27,9 +27,23 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   LinkedHashMap<AShortString, AMQPNativeType> properties = new LinkedHashMap<AShortString, AMQPNativeType>();
 
   //Constructor for programmatically creating new frames
-  //AMQPMethodFrame() {
-  //  //TODO
-  //}
+  AMQPMethodFrame(AShortUInt amqpClass, ALongLongUInt bodySize, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> properties) {
+    this.amqpClass = amqpClass;
+    this.weight = new AShortUInt(0); //Always zero
+    this.bodySize = bodySize;
+    this.flags = flags;
+    this.properties = properties;
+  }
+
+  //Programmatically build a complete header frame in one go
+  public static AMQPFrame build(AShortUInt class_id, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> args) {
+
+    //Build the inner frame
+    AMQPMethodFrame method_frame = new AMQPHeaderFrame(class_id, amethod, args);
+
+    //Build the complete frame
+    return new AMQPFrame(AMQPFrame.AMQPFrameType.METHOD, new AShortUInt(0), method_frame);
+  }
 
   //Constructor for creating frame from wire
   AMQPHeaderFrame(AShortUInt amqpClass, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {

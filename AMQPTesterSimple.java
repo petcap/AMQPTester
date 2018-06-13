@@ -190,15 +190,33 @@ public class AMQPTesterSimple extends AMQPTester {
       //Basic.consume
       if (inner.amqpClass.toInt() == 60 && inner.amqpMethod.toInt() == 20) {
         //Build frame
-        //Short string = consumer ID
-        AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("HelloWorld"));
+        //Short string = consumer ID, unique to channel
+        AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("amq.HelloWorld"));
 
         //Set same channel
         outgoing.channel = frame.channel;
 
-        //Send
+        queue_outgoing.add(outgoing);
+
         System.out.println("Sending Basic.Consume-OK");
-        System.out.println(outgoing.toWire().toHexString());
+
+        //We are now ready to send messages to the client, let's attempt to send a
+        //message and then close the connection
+
+        //Add arguments to basic.deliver
+        LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+        arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
+        arguments.put(new AShortString("delivery-tag"), new ALongLongUInt(1));
+        arguments.put(new AShortString("redelivered"), new ABoolean(false));
+        arguments.put(new AShortString("exchange"), new AShortString("hello"));
+        arguments.put(new AShortString("routing-key"), new AShortString("hello"));
+        outgoing = AMQPMethodFrame.build(60, 60, arguments);
+
+        queue_outgoing.add(outgoing);
+        System.out.println("Sending Basic.Deliver");
+
+        //Send header frame
+        //TODO
       }
     }
 

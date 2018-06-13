@@ -11,6 +11,11 @@ public class ABoolean extends AMQPNativeType {
 
   }
 
+  ABoolean(boolean value) {
+    this.type = AMQPNativeType.Type.BOOLEAN;
+    this.value = value;
+  }
+
   //Get boolean value
   public boolean toBool() {
     return value;
