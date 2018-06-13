@@ -212,11 +212,30 @@ public class AMQPTesterSimple extends AMQPTester {
         arguments.put(new AShortString("routing-key"), new AShortString("hello"));
         outgoing = AMQPMethodFrame.build(60, 60, arguments);
 
+        //Set same channel
+        outgoing.channel = frame.channel;
+
         queue_outgoing.add(outgoing);
         System.out.println("Sending Basic.Deliver");
 
         //Send header frame
-        //TODO
+        AMQPFrame header = AMQPHeaderFrame.build(
+          frame.channel, //Same channel as received on
+          new AShortUInt(60), //Class ID 60
+          new ALongLongUInt(5) //Body length
+        );
+
+        queue_outgoing.add(header);
+        System.out.println("Sent header");
+
+        //Send body frame
+        AMQPFrame body = AMQPBodyFrame.build(
+          frame.channel, //Same channel as received on
+          "Hello"
+        );
+
+        queue_outgoing.add(body);
+        System.out.println("Sent body");
       }
     }
 

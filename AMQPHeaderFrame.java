@@ -27,7 +27,7 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   LinkedHashMap<AShortString, AMQPNativeType> properties = new LinkedHashMap<AShortString, AMQPNativeType>();
 
   //Constructor for programmatically creating new frames
-  AMQPMethodFrame(AShortUInt amqpClass, ALongLongUInt bodySize, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> properties) {
+  AMQPHeaderFrame(AShortUInt amqpClass, ALongLongUInt bodySize, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> properties) {
     this.amqpClass = amqpClass;
     this.weight = new AShortUInt(0); //Always zero
     this.bodySize = bodySize;
@@ -35,15 +35,21 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
     this.properties = properties;
   }
 
-  //Programmatically build a complete header frame in one go
-  public static AMQPFrame build(AShortUInt channel, AShortUInt class_id, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> args) {
+  //Build a new header frame
+  public static AMQPFrame build(AShortUInt channel, AShortUInt class_id, AShortUInt flags, ALongLongUInt body_size, LinkedHashMap<AShortString, AMQPNativeType> properties) {
 
     //Build the inner frame
-    AMQPMethodFrame header_frame = new AMQPHeaderFrame(class_id, amethod, args);
+    AMQPHeaderFrame header_frame = new AMQPHeaderFrame(class_id, body_size, flags, properties);
 
     //Build the complete frame
     return new AMQPFrame(AMQPFrame.AMQPFrameType.HEADER, channel, header_frame);
   }
+
+  //Build a new header frame with no arguments
+  public static AMQPFrame build(AShortUInt channel, AShortUInt class_id, ALongLongUInt body_size) {
+    return build(channel, class_id, new AShortUInt(0), body_size, new LinkedHashMap<AShortString, AMQPNativeType>());
+  }
+
 
   //Constructor for creating frame from wire
   AMQPHeaderFrame(AShortUInt amqpClass, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
@@ -64,7 +70,7 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
     //Read all set flag values into the properties...
     //TODO: Make sure this works properly
 
-    //Read properties for the Basic class
+    //Read the set properties for the Basic class
     if (amqpClass.equals(new AShortUInt(60))) {
       if (flags.getFlag(0)) properties.put(new AShortString("content-type"), new AShortString(buffer));
       if (flags.getFlag(1)) properties.put(new AShortString("content-encoding"), new AShortString(buffer));
@@ -117,9 +123,20 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
 
   //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
   public ByteArrayBuffer toWire() {
-    //To be populated with the frame
     ByteArrayBuffer ret = new ByteArrayBuffer();
-    //TODO: Implement this
+
+    //Class ID
+    ret.put(amqpClass.toWire());
+
+    //Weight (always zero)
+    ret.put(weight.toWire());
+
+    //Payload/body size
+    ret.put(bodySize.toWire());
+
+    //Flags
+    ret.put(bodySize.toWire());
+
     return ret;
   }
 };
