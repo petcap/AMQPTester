@@ -156,7 +156,7 @@ public class AMQPFrame {
 
     //Check that the buffered payload length is long enough
     if (frame.length() < 1 + length.toInt()) { //Add 1 because of ending trailer byte 0xCE
-      throw new InvalidFrameException("Packet too short");
+      throw new InvalidFrameException("Frame too short");
     }
 
     //Pop the frame contents
@@ -168,13 +168,12 @@ public class AMQPFrame {
     }
 
     //All checks on the frame OK, build the inner frame
-    AMQPInnerFrame innerFrame = AMQPInnerFrame.build(framePayload, type);
+    AMQPInnerFrame innerFrame = AMQPInnerFrame.build(framePayload, type, length, channel);
 
     //Create and return a new Frame object
     return new AMQPFrame(
       type,
       channel,
-      //framePayload, //We don't care about the original payload since it is redundant
       innerFrame
     );
   }

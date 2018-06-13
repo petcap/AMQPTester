@@ -151,7 +151,7 @@ public class AMQPTesterSimple extends AMQPTester {
         //Add arguments
         arguments.put(new AShortString("queue"), queue_name);
         arguments.put(new AShortString("message-count"), new ALongUInt(0));
-        arguments.put(new AShortString("consumer-count"), new ALongUInt(0));
+        arguments.put(new AShortString("consumer-count"), new ALongUInt(1));
 
         //Build frame and set same channel
         AMQPFrame outgoing = AMQPMethodFrame.build(50, 11, arguments);

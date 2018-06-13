@@ -13,7 +13,7 @@ public class AMQPInnerFrame {
       //Expects one complete frame
       //This method consumes data from the ByteArrayBuffer, make sure to copy data
       //if you need to keep it for other purposes
-      public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrame.AMQPFrameType frameType) throws InvalidFrameException {
+      public static AMQPInnerFrame build(ByteArrayBuffer byteArrayBuffer, AMQPFrame.AMQPFrameType frameType, ALongUInt length, AShortUInt channel) throws InvalidFrameException {
 
         //Do we want to build a Method frame?
         if (frameType == AMQPFrame.AMQPFrameType.METHOD) {
@@ -68,8 +68,8 @@ public class AMQPInnerFrame {
           //Attempt to build the frame object
           try {
             amqpHeaderFrame = new AMQPHeaderFrame(
-            amqpClass,
-            byteArrayBuffer
+              amqpClass,
+              byteArrayBuffer
             );
           } catch (InvalidTypeException e) {
             throw new InvalidFrameException("Failed to build header frame, invalid encoding: " + e.toString());
@@ -80,7 +80,20 @@ public class AMQPInnerFrame {
 
         //Do we want to build a Body frame?
         if (frameType == AMQPFrame.AMQPFrameType.BODY) {
-          //TODO: Implement body frames
+          System.err.println("Got a body frame:\n" + byteArrayBuffer.toHexString());
+          AMQPBodyFrame amqpBodyFrame = null;
+
+          //Attempt to build the body frame
+          try {
+            amqpBodyFrame = new AMQPBodyFrame(
+              length,
+              byteArrayBuffer
+            );
+          } catch (InvalidTypeException e) {
+            throw new InvalidFrameException("Failed to build body frame, invalid encoding: " + e.toString());
+          }
+
+          return amqpBodyFrame;
         }
 
         //Should never be reached, as all three possible frame types are created above
