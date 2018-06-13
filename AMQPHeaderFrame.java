@@ -36,13 +36,13 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   }
 
   //Programmatically build a complete header frame in one go
-  public static AMQPFrame build(AShortUInt class_id, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> args) {
+  public static AMQPFrame build(AShortUInt channel, AShortUInt class_id, AShortUInt flags, LinkedHashMap<AShortString, AMQPNativeType> args) {
 
     //Build the inner frame
-    AMQPMethodFrame method_frame = new AMQPHeaderFrame(class_id, amethod, args);
+    AMQPMethodFrame header_frame = new AMQPHeaderFrame(class_id, amethod, args);
 
     //Build the complete frame
-    return new AMQPFrame(AMQPFrame.AMQPFrameType.METHOD, new AShortUInt(0), method_frame);
+    return new AMQPFrame(AMQPFrame.AMQPFrameType.HEADER, channel, header_frame);
   }
 
   //Constructor for creating frame from wire
