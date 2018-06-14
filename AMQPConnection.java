@@ -70,7 +70,16 @@ public class AMQPConnection {
   //Periodically called (currently every 1 sec) by the server code
   public void periodical() {
     tester.periodical();
-    System.out.println(queue_outgoing.toHexString());
+
+    //Check the frame queue for new frames which might have been added
+    //by the periodical call
+    AMQPFrame reply = tester.getFrame();
+
+    //Read and buffer frames to the wire
+    while (reply != null) {
+      this.queue_outgoing.put(reply.toWire());
+      reply = tester.getFrame();
+    }
   }
 
   //Get data which is queued to be sent to the other peer
