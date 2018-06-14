@@ -129,7 +129,7 @@ public class AMQPTesterSimple extends AMQPTester {
     AMQPFrame header = AMQPHeaderFrame.build(
       new AShortUInt(1), //Same channel as received on
       new AShortUInt(60), //Class ID 60
-      new ALongLongUInt(5) //Body length
+      new ALongLongUInt(23) //Body length
     );
 
     queue_outgoing.add(header);
@@ -138,7 +138,7 @@ public class AMQPTesterSimple extends AMQPTester {
     //Send body frame
     AMQPFrame body = AMQPBodyFrame.build(
       new AShortUInt(1), //Same channel as received on
-      "Hello"
+      "Message from periodical"
     );
 
     //Queue the body frame
