@@ -100,17 +100,6 @@ public class AMQPTesterSimple extends AMQPTester {
     //Only send periodical messages if the client is subscribing
     if (state != State.SUBSCRIBED) return;
 
-    //Build frame
-    //Short string = consumer ID, unique to channel
-    AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("amq.HelloWorld"));
-
-    //Set same channel
-    outgoing.channel = new AShortUInt(1);
-
-    queue_outgoing.add(outgoing);
-
-    System.out.println("Sending Basic.Consume-OK");
-
     //We are now ready to send messages to the client, let's attempt to send a
     //message and then close the connection
     //Add arguments to basic.deliver
@@ -120,7 +109,7 @@ public class AMQPTesterSimple extends AMQPTester {
     arguments.put(new AShortString("redelivered"), new ABoolean(false));
     arguments.put(new AShortString("exchange"), new AShortString("hello"));
     arguments.put(new AShortString("routing-key"), new AShortString("hello"));
-    outgoing = AMQPMethodFrame.build(60, 60, arguments);
+    AMQPFrame outgoing = AMQPMethodFrame.build(60, 60, arguments);
 
     //Set same channel
     outgoing.channel = new AShortUInt(1);
