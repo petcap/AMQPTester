@@ -15,6 +15,7 @@ public class AMQPTesterSimple extends AMQPTester {
   public enum State {
     INITIALIZING, //Connection.Start, Connection.Tune
     HANDSHAKE_COMPLETE, //Connection.Start and Tune complete
+    SUBSCRIBED, //Client subscribed for messages
   }
 
   //Associated AMQPConnection
@@ -92,6 +93,57 @@ public class AMQPTesterSimple extends AMQPTester {
         System.out.println("AMQPTesterSimple: Received bad frame during initialization");
       }
     }
+  }
+
+  //Periodical update
+  public void periodical() {
+    //Build frame
+    //Short string = consumer ID, unique to channel
+    AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("amq.HelloWorld"));
+
+    //Set same channel
+    outgoing.channel = new AShortUInt(1);
+
+    queue_outgoing.add(outgoing);
+
+    System.out.println("Sending Basic.Consume-OK");
+
+    //We are now ready to send messages to the client, let's attempt to send a
+    //message and then close the connection
+    //Add arguments to basic.deliver
+    LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+    arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
+    arguments.put(new AShortString("delivery-tag"), new ALongLongUInt(1));
+    arguments.put(new AShortString("redelivered"), new ABoolean(false));
+    arguments.put(new AShortString("exchange"), new AShortString("hello"));
+    arguments.put(new AShortString("routing-key"), new AShortString("hello"));
+    outgoing = AMQPMethodFrame.build(60, 60, arguments);
+
+    //Set same channel
+    outgoing.channel = new AShortUInt(1);
+
+    queue_outgoing.add(outgoing);
+    System.out.println("Sending Basic.Deliver");
+
+    //Send header frame
+    AMQPFrame header = AMQPHeaderFrame.build(
+      new AShortUInt(1), //Same channel as received on
+      new AShortUInt(60), //Class ID 60
+      new ALongLongUInt(5) //Body length
+    );
+
+    queue_outgoing.add(header);
+    System.out.println("Sent header");
+
+    //Send body frame
+    AMQPFrame body = AMQPBodyFrame.build(
+      new AShortUInt(1), //Same channel as received on
+      "Hello"
+    );
+
+    //Queue the body frame
+    queue_outgoing.add(body);
+    System.out.println("Sent body");
   }
 
   //Currently triggered upon modifying the incoming frame queue
@@ -189,6 +241,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
       //Basic.consume
       if (inner.amqpClass.toInt() == 60 && inner.amqpMethod.toInt() == 20) {
+
         //Build frame
         //Short string = consumer ID, unique to channel
         AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("amq.HelloWorld"));
@@ -202,7 +255,6 @@ public class AMQPTesterSimple extends AMQPTester {
 
         //We are now ready to send messages to the client, let's attempt to send a
         //message and then close the connection
-
         //Add arguments to basic.deliver
         LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
         arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
@@ -234,8 +286,12 @@ public class AMQPTesterSimple extends AMQPTester {
           "Hello"
         );
 
+        //Queue the body frame
         queue_outgoing.add(body);
         System.out.println("Sent body");
+
+        //Our client is now waiting for messages
+        state = State.SUBSCRIBED;
       }
     }
 

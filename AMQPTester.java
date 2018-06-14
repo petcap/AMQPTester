@@ -11,6 +11,9 @@ public class AMQPTester {
   //Deliver a frame received over the wire
   public void deliverFrame(AMQPFrame amqpFrame){}
 
+  //Periodocal call
+  public void periodical() {}
+
   //Get a frame from the tester which is to be sent over the wire
   //Returns null when there are no frames to be delivered
   public AMQPFrame getFrame(){

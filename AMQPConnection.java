@@ -67,6 +67,12 @@ public class AMQPConnection {
     deliverData(data);
   }
 
+  //Periodically called (currently every 1 sec) by the server code
+  public void periodical() {
+    tester.periodical();
+    System.out.println(queue_outgoing.toHexString());
+  }
+
   //Get data which is queued to be sent to the other peer
   public byte[] sendData(int length_limit) {
     return queue_outgoing.get(length_limit);

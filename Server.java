@@ -52,9 +52,30 @@ public class Server {
     while(true) {
       try {
         //If select() returns zero, nothing interesting has happened
-        //Might be the case if wkaeUp() is called from another thread
-        if (selector.select() < 1) {
-          continue;
+        //Might be the case if wakeUp() is called from another thread
+        //We do however request to wake up every second in order to call all
+        //AMQPConnection objects so they can perform periodical tasks
+        if (selector.select((long) 1000) < 1) {
+
+          //Get all SelectionKeys which are currently being watched
+          //I.e. those that are connected to the server
+          Set<SelectionKey> active = selector.keys();
+
+          //Loop over all SelektionKeys
+          for(SelectionKey sk : active) {
+            //Get the AMQPConnection associated with the client
+            AMQPConnection conn = (AMQPConnection) sk.attachment();
+
+            //conn may stil be null before the connection has been properly
+            //initialized
+            if (conn != null) conn.periodical();
+
+            //Update the interest set in case the periodical call has put
+            //some data in the buffer
+            if (conn != null) {
+              sk.channel().register(selector, conn.getSelectorRegisterMask(), conn);
+            }
+          }
         }
 
         //Get an interator over all interesting events
