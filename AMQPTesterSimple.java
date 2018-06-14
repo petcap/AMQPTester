@@ -97,6 +97,9 @@ public class AMQPTesterSimple extends AMQPTester {
 
   //Periodical update
   public void periodical() {
+    //Only send periodical messages if the client is subscribing
+    if (state != State.SUBSCRIBED) return;
+
     //Build frame
     //Short string = consumer ID, unique to channel
     AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("amq.HelloWorld"));
