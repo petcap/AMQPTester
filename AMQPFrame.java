@@ -44,6 +44,11 @@ public class AMQPFrame {
     this.innerFrame = innerFrame;
   }
 
+  //Get frame size on wire (full frame, incl. all header values
+  public int size() {
+    return this.toWire().size();
+  }
+
   //Create a ByteArrayBuffer containing the frame
   public ByteArrayBuffer toWire() {
     //Frame format:

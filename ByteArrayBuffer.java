@@ -187,6 +187,11 @@ public class ByteArrayBuffer {
       return result;
   }
 
+  //Return buffer size
+  public int size() {
+    return buffer.length;
+  }
+
   //Taken (and modified) from https://stackoverflow.com/questions/4485128/how-do-i-convert-long-to-byte-and-back-in-java
   public static int bytesToInt(byte[] b) {
       int result = 0;

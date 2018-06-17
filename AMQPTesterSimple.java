@@ -18,6 +18,9 @@ public class AMQPTesterSimple extends AMQPTester {
     SUBSCRIBED, //Client subscribed for messages
   }
 
+  //Temporary counter
+  int temp_count = 0;
+
   //Associated AMQPConnection
   AMQPConnection amqpConnection;
 
@@ -73,7 +76,7 @@ public class AMQPTesterSimple extends AMQPTester {
           //Arguments to include in the method call
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
           arguments.put(new AShortString("channel-max"), new AShortUInt(1));
-          arguments.put(new AShortString("frame-max"), new ALongUInt(1000));
+          arguments.put(new AShortString("frame-max"), new ALongUInt(10)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
           arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
 
           //Send connection.tune
@@ -99,6 +102,34 @@ public class AMQPTesterSimple extends AMQPTester {
   public void periodical() {
     //Only send periodical messages if the client is subscribing
     if (state != State.SUBSCRIBED) return;
+
+    //Send Channel.Close after 3 messages
+    if (++temp_count == 3) {
+      //Arguments for channel.close
+      LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+      arguments.put(new AShortString("reply-code"), new AShortUInt(0));
+      arguments.put(new AShortString("reply-text"), new AShortString(""));
+      arguments.put(new AShortString("class-id"), new AShortUInt(0));
+      arguments.put(new AShortString("method-id"), new AShortUInt(0));
+
+      //Build the frame object
+      AMQPFrame outgoing = AMQPMethodFrame.build(20, 40, arguments);
+
+      //We should be on channel 1
+      outgoing.channel = new AShortUInt(1);
+
+      //Send command to other peer
+      queue_outgoing.add(outgoing);
+      System.out.println("Sending channel.close in periodical");
+
+      return;
+    }
+
+    //Do nothing after 3 sent messages
+    if (++temp_count > 3) {
+      System.out.println("Periodical ignoring action");
+      return;
+    }
 
     //We are now ready to send messages to the client, let's attempt to send a
     //message and then close the connection
@@ -157,7 +188,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
       //Get the inner frame that contains all important frame data
       AMQPMethodFrame inner = (AMQPMethodFrame) frame.innerFrame;
-      System.out.println("AMQPTesterSimple(inited) received: " + inner.toString());
+      System.out.println("Frame received (size: " + frame.size() + "): " + inner.toString());
 
       //Connection.open
       if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 40) {
