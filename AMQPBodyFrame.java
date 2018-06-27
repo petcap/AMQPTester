@@ -49,7 +49,7 @@ public class AMQPBodyFrame extends AMQPInnerFrame {
   //For debugging
   public String toString() {
     String ret = "Body frame:\n";
-    ret += " * Payload: " + payload.toString() + "\n";
+    ret += " *** Payload: " + payload.toString() + "\n";
     return ret;
   }
 

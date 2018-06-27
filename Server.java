@@ -11,7 +11,12 @@ public class Server {
 
   //Maximum size of intermediate read/write
   //This will be the most number of bytes we read in one go
-  public static int SOCKET_BUFFER_SIZE = 4096;
+  public static int SOCKET_BUFFER_SIZE = 1024;
+
+  //Delay socket writes, sleep 100ms between each write
+  //This can be used to test client tollerance for half-filled buffers,
+  //i.e. to try if clients can handle to only receive parts of frames
+  public static int DELAYED_WRITE = false;
 
   public static void main(String[] args) {
 
@@ -186,6 +191,13 @@ public class Server {
 
             //Tell the object how much data has been sent via the socket
             amqpConnection.confirmSent(writeStatus);
+
+            //Sleep a while
+            if (DELAYED_WRITE) {
+              try {
+                Thread.sleep(100);
+              } catch(InterruptedException e){}
+            }
 
             //Check if the client should be disconnected
             if (amqpConnection.queue_outgoing.length() == 0 && amqpConnection.status == AMQPConnection.AMQPConnectionState.DISCONNECT) {

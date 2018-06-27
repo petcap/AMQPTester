@@ -104,23 +104,23 @@ public class AMQPTesterSimple extends AMQPTester {
     if (state != State.SUBSCRIBED) return;
 
     //Send Channel.Close after 3 messages
-    if (++temp_count == 3) {
-      //Arguments for channel.close
-      LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
-      arguments.put(new AShortString("reply-code"), new AShortUInt(0));
-      arguments.put(new AShortString("reply-text"), new AShortString(""));
-      arguments.put(new AShortString("class-id"), new AShortUInt(0));
-      arguments.put(new AShortString("method-id"), new AShortUInt(0));
+    if (temp_count == 3) {
+      ////Arguments for channel.close
+      //LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+      //arguments.put(new AShortString("reply-code"), new AShortUInt(0));
+      //arguments.put(new AShortString("reply-text"), new AShortString(""));
+      //arguments.put(new AShortString("class-id"), new AShortUInt(0));
+      //arguments.put(new AShortString("method-id"), new AShortUInt(0));
 
-      //Build the frame object
-      AMQPFrame outgoing = AMQPMethodFrame.build(20, 40, arguments);
+      ////Build the frame object
+      //AMQPFrame outgoing = AMQPMethodFrame.build(20, 40, arguments);
 
-      //We should be on channel 1
-      outgoing.channel = new AShortUInt(1);
+      ////We should be on channel 1
+      //outgoing.channel = new AShortUInt(1);
 
-      //Send command to other peer
-      queue_outgoing.add(outgoing);
-      System.out.println("Sending channel.close in periodical");
+      ////Send command to other peer
+      //queue_outgoing.add(outgoing);
+      //System.out.println("Sending channel.close in periodical");
 
       return;
     }
@@ -138,7 +138,7 @@ public class AMQPTesterSimple extends AMQPTester {
     arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
     arguments.put(new AShortString("delivery-tag"), new ALongLongUInt(1));
     arguments.put(new AShortString("redelivered"), new ABoolean(false));
-    arguments.put(new AShortString("exchange"), new AShortString("hello"));
+    arguments.put(new AShortString("exchange"), new AShortString("Heeey"));
     arguments.put(new AShortString("routing-key"), new AShortString("hello"));
     AMQPFrame outgoing = AMQPMethodFrame.build(60, 60, arguments);
 
@@ -161,7 +161,7 @@ public class AMQPTesterSimple extends AMQPTester {
     //Send body frame
     AMQPFrame body = AMQPBodyFrame.build(
       new AShortUInt(1), //Same channel as received on
-      "Message from periodical"
+      "Periodical message numer " + temp_count
     );
 
     //Queue the body frame
