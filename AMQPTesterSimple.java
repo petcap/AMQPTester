@@ -76,7 +76,7 @@ public class AMQPTesterSimple extends AMQPTester {
           //Arguments to include in the method call
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
           arguments.put(new AShortString("channel-max"), new AShortUInt(1));
-          arguments.put(new AShortString("frame-max"), new ALongUInt(10)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
+          arguments.put(new AShortString("frame-max"), new ALongUInt(1024)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
           arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
 
           //Send connection.tune
@@ -188,7 +188,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
       //Get the inner frame that contains all important frame data
       AMQPMethodFrame inner = (AMQPMethodFrame) frame.innerFrame;
-      System.out.println("Frame received (size: " + frame.size() + "): " + inner.toString());
+      System.out.println("Frame received (full size: " + frame.size() + "): " + inner.toString());
 
       //Connection.open
       if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 40) {
@@ -326,7 +326,7 @@ public class AMQPTesterSimple extends AMQPTester {
 
     //Did we receive a Body frame?
     if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.BODY) {
-      System.out.println("Received body frame in TesterSimple, data:");
+      System.out.println("Received body frame (full size: " + frame.toWire().length() + ") in TesterSimple, data:");
       System.out.println(frame.innerFrame.toString());
     }
   }

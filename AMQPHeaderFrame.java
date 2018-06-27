@@ -16,10 +16,15 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   public ALongLongUInt bodySize;
 
   //Header frame properties
-  //TODO: If the LSB is set, there exists at least one more property field
-  //This can be as many property fields as needed
-  //In reality, only 14 flags are defined by the Basic class and hence
-  //one single AShortUInt should always be enough
+  //The bit format is as follows:
+  //If the LSB is set, then another octet immedately follows with more flags
+  //This goes on until the LSB is zeroed out
+  //For example:
+  // 0x00001000 - One flag set on index 2
+  // 0x00001001 0x00001000 - 2 flags set on index 2 and 9
+  //The standard only defines 14 flags, so most implementations probably
+  //just assign a short uint, but there should be nothing stopping us from sending
+  //lots of zeroed out flags as long as each LSB is set to 1
   public AShortUInt flags;
 
   //All properties within the header frame
@@ -122,7 +127,8 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   }
 
   //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
-  public ByteArrayBuffer toWire() {
+  //Special case: Generate with specific flags
+  public ByteArrayBuffer toWire(ByteArrayBuffer specialFlags) {
     ByteArrayBuffer ret = new ByteArrayBuffer();
 
     //Class ID
@@ -135,8 +141,13 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
     ret.put(bodySize.toWire());
 
     //Flags
-    ret.put(bodySize.toWire());
+    ret.put(specialFlags);
 
     return ret;
+  }
+
+  //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
+  public ByteArrayBuffer toWire() {
+    return toWire(this.flags.toWire());
   }
 };
