@@ -161,7 +161,7 @@ public class AMQPTesterSimple extends AMQPTester {
     //Send body frame
     AMQPFrame body = AMQPBodyFrame.build(
       new AShortUInt(1), //Same channel as received on
-      "Periodical message numer " + temp_count
+      "Periodical message number " + temp_count
     );
 
     //Queue the body frame
@@ -319,7 +319,7 @@ public class AMQPTesterSimple extends AMQPTester {
         //Send body frame
         AMQPFrame body = AMQPBodyFrame.build(
           frame.channel, //Same channel as received on
-          "Hello"
+          "Hello from AMQPTesterSimple.java"
         );
 
         //Queue the body frame
