@@ -27,6 +27,9 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
   //lots of zeroed out flags as long as each LSB is set to 1
   public AShortUInt flags;
 
+  //Special set of flags which can be activated if needed by calling setSpecialFlags()
+  public ByteArrayBuffer special_flags = null;
+
   //All properties within the header frame
   //This gets populated based on which flags are set in the above AShortUInt
   LinkedHashMap<AShortString, AMQPNativeType> properties = new LinkedHashMap<AShortString, AMQPNativeType>();
@@ -146,8 +149,22 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
     return ret;
   }
 
+  public void setSpecialFlags(ByteArrayBuffer special_flags) {
+    this.special_flags = special_flags.copy();
+  }
+
+  public void unSetSpecialFlags() {
+    this.special_flags = null;
+  }
+
   //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
   public ByteArrayBuffer toWire() {
+    //Use special flags?
+    if (special_flags != null) {
+      return toWire(special_flags);
+    }
+
+    //Use regular flags
     return toWire(this.flags.toWire());
   }
 };

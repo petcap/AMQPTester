@@ -300,6 +300,19 @@ public class AMQPTesterSimple extends AMQPTester {
           new ALongLongUInt(5) //Body length
         );
 
+        //Special flags used for the header frame
+        ByteArrayBuffer flags = new ByteArrayBuffer(new byte[]{
+          0b00000000, 0b00000001, //LSB = 1 means more flags are coming
+          0b00000000, 0b00000001,
+          0b00000000, 0b00000001,
+          0b00000000, 0b00000001,
+          0b00000000, 0b00000001,
+          0b00000000, 0b00000000, //Last flag
+        });
+
+        //Override the flags in the header frame
+        ((AMQPHeaderFrame) header.innerFrame).setSpecialFlags(flags);
+
         queue_outgoing.add(header);
         System.out.println("Sent header");
 

@@ -16,7 +16,7 @@ public class Server {
   //Delay socket writes, sleep 100ms between each write
   //This can be used to test client tollerance for half-filled buffers,
   //i.e. to try if clients can handle to only receive parts of frames
-  public static int DELAYED_WRITE = false;
+  public static boolean DELAYED_WRITE = false;
 
   public static void main(String[] args) {
 
