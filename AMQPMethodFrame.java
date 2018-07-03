@@ -97,7 +97,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
     if (amqpClass.toInt() == 60) {
       //Method: Consume
       if (amqpMethod.toInt() == 20) {
-        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer)); //Ticket?
+        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer)); //Always zero, depricated value (was ticket)
         arguments.put(new AShortString("queue"), new AShortString(buffer));
         arguments.put(new AShortString("consumer-tag"), new AShortString(buffer));
         arguments.put(new AShortString("setting-bits"), new AOctet(buffer));
@@ -106,7 +106,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
       //Method: Publish
       if (amqpMethod.toInt() == 40) {
-        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer)); //Ticket? Short uint
+        arguments.put(new AShortString("reserved-1"), new AShortUInt(buffer)); //Always zero, depricated value (was ticket)
         arguments.put(new AShortString("exchange-name"), new AShortString(buffer)); //Empty = default exchange
         arguments.put(new AShortString("routing-key"), new AShortString(buffer));
         arguments.put(new AShortString("mandatory"), new AOctet(buffer)); //LSB: Mandatory, Bit2: Immediate
