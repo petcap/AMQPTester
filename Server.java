@@ -199,18 +199,21 @@ public class Server {
               } catch(InterruptedException e){}
             }
 
-            //Check if the client should be disconnected
-            if (amqpConnection.queue_outgoing.length() == 0 && amqpConnection.status == AMQPConnection.AMQPConnectionState.DISCONNECT) {
-              writeSocketChannel.close();
-              System.out.println("Disconnected a client");
-              continue;
-            }
 
             //Notify the AMQPConnection object that we have an updated state
             amqpConnection.updateState();
 
             //Update the selector interest set
             writeSocketChannel.register(selector, amqpConnection.getSelectorRegisterMask(), amqpConnection);
+          }
+
+          //Check if the client should be disconnected
+          AMQPConnection amqpConnection = (AMQPConnection) selectionKey.attachment();
+
+          if (amqpConnection != null && amqpConnection.queue_outgoing.length() == 0 && amqpConnection.status == AMQPConnection.AMQPConnectionState.DISCONNECT) {
+            selectionKey.channel().close();
+            System.out.println("Disconnected a client");
+            continue;
           }
 
           keyIterator.remove();
