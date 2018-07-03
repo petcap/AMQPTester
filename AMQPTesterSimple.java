@@ -221,7 +221,7 @@ public class AMQPTesterSimple extends AMQPTester {
         queue_outgoing.add(outgoing);
 
         //Debugging
-        System.out.println("Sending Channel.Open-OK");
+        System.out.println("Sending Channel.Open-OK (for channel " + frame.channel + ")");
       }
 
       //Channel.close
