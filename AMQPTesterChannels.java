@@ -6,7 +6,7 @@ import java.util.*;
 public class AMQPTesterChannels extends AMQPTester {
 
   //The server will send this channel limit to the client
-  public static final int no_channels = 0;
+  public static final int no_channels = 30000;
 
   //The current count of open channels
   public int open_channels = 0;
