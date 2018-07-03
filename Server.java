@@ -103,7 +103,7 @@ public class Server {
 
             //Our AMQPConnection which will be responsible for handling this
             //connections
-            AMQPConnection amqpConnection = new AMQPConnection(sc);
+            AMQPConnection amqpConnection = new AMQPConnection(sc, args);
 
             //Register the channel with the selector to get notified when
             //interesting events happen, and attach our object to it

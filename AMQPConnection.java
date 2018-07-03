@@ -41,13 +41,19 @@ public class AMQPConnection {
   //access or similar
   public SocketChannel socketChannel;
 
+  //Arguments from commandline
+  public String[] args;
+
   //Constructor
-  AMQPConnection(SocketChannel socketChannel) {
+  AMQPConnection(SocketChannel socketChannel, String[] args) {
     //Set initial status to uninitialized/expecting handshake
     status = AMQPConnectionState.UNINITIALIZED;
 
     //Pointer to the SocketChannel for this client
     this.socketChannel = socketChannel;
+
+    //Arguments from command line
+    this.args = args;
 
     System.out.println("Initialized AMQPConnection");
   }
@@ -115,10 +121,14 @@ public class AMQPConnection {
           //Remove the handshake from the queue
           queue_incoming.clear();
 
-          //Initialize the tester
-          //FIXME: Initialize different testers in the future depending on
-          //command line arguments we receive
-          tester = new AMQPTesterSimple(this);
+          //Initialize the tester depending on the argument received from the command line
+          if (args.length > 0 && args[0].equals("channels")) {
+            System.out.println("Starting using mode: " + args[0]);
+            tester = new AMQPTesterChannels(this);
+          } else {
+            System.out.println("Starting using default mode");
+            tester = new AMQPTesterSimple(this);
+          }
 
           //The connection is now initialized and ready to be taken over by the AMQPTester
           status = AMQPConnectionState.HANDSHAKE_COMPLETE;
