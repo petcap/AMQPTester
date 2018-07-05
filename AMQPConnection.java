@@ -21,9 +21,15 @@ public class AMQPConnection {
   AMQPConnectionState status;
 
   //The only valid handshake string for AMQP 0-9-1
-  //Also the only part which is not specified by the AMQP grammar
+  //Also the only part which is not using the AMQP frame grammar
   public static final ByteArrayBuffer AMQP_VALID_HANDSHAKE = new ByteArrayBuffer(
-  new byte[]{'A', 'M', 'Q', 'P', 0x00, 0x00, 0x09, 0x01}
+    new byte[]{'A', 'M', 'Q', 'P', 0x00, 0x00, 0x09, 0x01}
+  );
+
+  //Special handshake for pyAmqp, not sure why they use this handshake but
+  //RabbitMQ seems to accept it as well
+  public static final ByteArrayBuffer AMQP_PYAMQP_HANDSHAKE = new ByteArrayBuffer(
+    new byte[]{'A', 'M', 'Q', 'P', 0x01, 0x01, 0x00, 0x09}
   );
 
   //Incoming data queue
@@ -112,8 +118,12 @@ public class AMQPConnection {
       //If we have enough data for the handshake in the queue, check
       //the handshake signature to make sure this is an AMQP client
       if (queue_incoming.length() >= 8) {
-        if (queue_incoming.equals(AMQP_VALID_HANDSHAKE)) {
-          System.out.println("Valid handshake received");
+        if (queue_incoming.equals(AMQP_VALID_HANDSHAKE) || queue_incoming.equals(AMQP_PYAMQP_HANDSHAKE)) {
+          System.out.println("Handshake received");
+
+          if (queue_incoming.equals(AMQP_PYAMQP_HANDSHAKE)) {
+            System.out.println("*** WARNING: Accepting faulty handshake version used by PyAMQP");
+          }
 
           //Handshake is now complete, update our state
           status = AMQPConnectionState.HANDSHAKE_COMPLETE;
@@ -139,7 +149,7 @@ public class AMQPConnection {
           //Invalid handshake, write the actual handshake as specified by the documentation
           queue_outgoing.put(AMQP_VALID_HANDSHAKE);
 
-          System.out.println("Received invalid handshake");
+          System.out.println("Received invalid handshake: " + queue_incoming.toHexString());
 
           //Clear any remaining data
           queue_incoming.clear();
