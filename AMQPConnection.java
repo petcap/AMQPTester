@@ -121,6 +121,9 @@ public class AMQPConnection {
         if (queue_incoming.equals(AMQP_VALID_HANDSHAKE) || queue_incoming.equals(AMQP_PYAMQP_HANDSHAKE)) {
           System.out.println("Handshake received");
 
+          //For some reason, PyAMQP does not send the standard handshake payload
+          //RabbitMQ does however seem to accept the non-standard one, so we accept
+          //it too and just issue a warning instead
           if (queue_incoming.equals(AMQP_PYAMQP_HANDSHAKE)) {
             System.out.println("*** WARNING: Accepting faulty handshake version used by PyAMQP");
           }
