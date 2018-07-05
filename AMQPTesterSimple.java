@@ -46,7 +46,7 @@ public class AMQPTesterSimple extends AMQPTester {
     start_arg.put(new AShortString("version-major"), new AOctet(0x00));
     start_arg.put(new AShortString("version-minor"), new AOctet(0x09));
     start_arg.put(new AShortString("server-properties"), new AFieldTable(server_props));
-    start_arg.put(new AShortString("mechanisms"), new ALongString("Helloooo"));
+    start_arg.put(new AShortString("mechanisms"), new ALongString("PLAIN AMQPPLAIN")); //Not checked anyway
     start_arg.put(new AShortString("locales"), new ALongString("en-US"));
 
     //Build the complete frame
