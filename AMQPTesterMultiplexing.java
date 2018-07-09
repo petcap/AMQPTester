@@ -103,44 +103,68 @@ public class AMQPTesterMultiplexing extends AMQPTester {
     }
   }
 
-  //Periodical update
-  public void periodical() {
-    //Only send messages once we have two consumers ready on different channels
-    if (state != State.SUBSCRIBED_1) return;
-
-    //Multiplex messages over the two channels
+  //Quickly build a basic.deliver frame
+  public static AMQPFrame basicDeliver(AShortUInt channel, String routingKey) {
+    //Options for basic.deliver (60/60)
     LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
-    arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
+    arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld")); //Unique per channel
     arguments.put(new AShortString("delivery-tag"), new ALongLongUInt(1));
     arguments.put(new AShortString("redelivered"), new ABoolean(false));
-    arguments.put(new AShortString("exchange"), new AShortString("test_1"));
-    arguments.put(new AShortString("routing-key"), new AShortString("test_1"));
+    arguments.put(new AShortString("exchange"), new AShortString("default"));
+    arguments.put(new AShortString("routing-key"), new AShortString(routingKey));
+
+    //Build the frame and set channel
     AMQPFrame outgoing = AMQPMethodFrame.build(60, 60, arguments);
+    outgoing.channel = channel;
 
-    //Set same channel
-    outgoing.channel = channel_1;
+    return outgoing;
+  }
 
-    queue_outgoing.add(outgoing);
-    System.out.println("Sending Basic.Deliver");
-
-    //Send header frame
-    AMQPFrame header = AMQPHeaderFrame.build(
-      channel_1, //Same channel as received on
+  //Quickly build a header frame
+  public static AMQPFrame headerFrame(AShortUInt channel, int length) {
+    return AMQPHeaderFrame.build(
+      channel, //Channel
       new AShortUInt(60), //Class ID 60
-      new ALongLongUInt(4) //Body length
+      new ALongLongUInt(length) //Body length
     );
+  }
 
-    queue_outgoing.add(header);
-    System.out.println("Sent header");
-
-    //Send body frame
-    AMQPFrame body = AMQPBodyFrame.build(
-      channel_1, //Same channel as received on
-      "test"
+  //Quickly build a body frame
+  public static AMQPFrame bodyFrame(AShortUInt channel, String message) {
+    return AMQPBodyFrame.build(
+      channel,
+      message
     );
+  }
 
-    //Queue the body frame
-    queue_outgoing.add(body);
+  //Periodical update
+  public void periodical() {
+
+    //Only send periodical messages once we have two consumers on different
+    //channels connected
+    if (state != State.SUBSCRIBED_2) return;
+
+    //Basic deliver 1
+    queue_outgoing.add(basicDeliver(channel_1, "test_1"));
+
+    //Basic deliver 2
+    //queue_outgoing.add(basicDeliver(channel_2, "test_2"));
+
+    //Header 2
+    //queue_outgoing.add(headerFrame(channel_2, 4));
+
+    //Header 1
+    queue_outgoing.add(headerFrame(channel_1, 4));
+
+    //Payload
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
     System.out.println("Sent body");
   }
 
@@ -239,6 +263,13 @@ public class AMQPTesterMultiplexing extends AMQPTester {
 
       //Basic.consume
       if (inner.amqpClass.toInt() == 60 && inner.amqpMethod.toInt() == 20) {
+
+        //Build outgoing basic.consome-ok
+        AMQPFrame outgoing = AMQPMethodFrame.build(60, 21, new AShortString("amq.HelloWorld"));
+        outgoing.channel = frame.channel;
+        queue_outgoing.add(outgoing);
+
+        System.out.println("Sending Basic.Consume-OK");
 
         //Do we have a consumer on the first channel?
         if (channel_1 == null) {
