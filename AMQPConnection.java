@@ -28,6 +28,7 @@ public class AMQPConnection {
 
   //Special handshake for pyAmqp, not sure why they use this handshake but
   //RabbitMQ seems to accept it as well
+  //This is NOT correct according to the AMQP specification
   public static final ByteArrayBuffer AMQP_PYAMQP_HANDSHAKE = new ByteArrayBuffer(
     new byte[]{'A', 'M', 'Q', 'P', 0x01, 0x01, 0x00, 0x09}
   );
@@ -138,6 +139,9 @@ public class AMQPConnection {
           if (args.length > 0 && args[0].equals("channels")) {
             System.out.println("Starting using mode: " + args[0]);
             tester = new AMQPTesterChannels(this);
+          } else if (args.length > 0 && args[0].equals("multiplexing")) {
+            System.out.println("Starting using mode: " + args[0]);
+            tester = new AMQPTesterMultiplexing(this);
           } else {
             System.out.println("Starting using default mode");
             tester = new AMQPTesterSimple(this);
