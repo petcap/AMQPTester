@@ -140,6 +140,10 @@ public class AMQPTesterMultiplexing extends AMQPTester {
   //Periodical update
   public void periodical() {
 
+    //Write max 10 bytes per 100ms
+    Server.DELAYED_WRITE = true;
+    Server.SOCKET_BUFFER_SIZE = 10;
+
     //Only send periodical messages once we have two consumers on different
     //channels connected
     if (state != State.SUBSCRIBED_2) return;
@@ -148,23 +152,23 @@ public class AMQPTesterMultiplexing extends AMQPTester {
     queue_outgoing.add(basicDeliver(channel_1, "test_1"));
 
     //Basic deliver 2
-    //queue_outgoing.add(basicDeliver(channel_2, "test_2"));
+    queue_outgoing.add(basicDeliver(channel_2, "test_2"));
 
     //Header 2
-    //queue_outgoing.add(headerFrame(channel_2, 4));
+    queue_outgoing.add(headerFrame(channel_2, 4));
 
     //Header 1
     queue_outgoing.add(headerFrame(channel_1, 4));
 
     //Payload
     queue_outgoing.add(bodyFrame(channel_1, "1"));
-    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
     queue_outgoing.add(bodyFrame(channel_1, "1"));
-    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
     queue_outgoing.add(bodyFrame(channel_1, "1"));
-    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
     queue_outgoing.add(bodyFrame(channel_1, "1"));
-    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
     System.out.println("Sent body");
   }
 
