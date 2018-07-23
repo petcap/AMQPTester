@@ -115,9 +115,91 @@ public class AMQPTesterReject extends AMQPTester {
 
     //Did we receive a Method frame?
     if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.METHOD) {
-      //Get the inner frame, which is an AMQPMethodFrame in this case
+
+      //Get the inner frame that contains all important frame data
       AMQPMethodFrame inner = (AMQPMethodFrame) frame.innerFrame;
-      System.out.println("Received method frame: " + inner.toString());
+      System.out.println("Frame received (full size: " + frame.size() + "): " + inner.toString());
+
+      //Basic.publish
+      if (inner.amqpClass.toInt() == 60 && inner.amqpMethod.toInt() == 40) {
+        //Make sure the mandatory flag is set
+        if ( ((AOctet) inner.getArg("mandatory")).toInt() != 1) {
+          System.out.println("Reject test demands the mandatory flag set");
+          System.exit(1);
+        }
+      }
+
+      //Connection.open
+      if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 40) {
+        //Maybe check the path in the future if needed?
+        //Send connection.open-ok
+        //The supplied octet is the reserved field
+        queue_outgoing.add(AMQPMethodFrame.build(10, 41, new AOctet(0x00)));
+        System.out.println("Sending Connection.Open-OK");
+      }
+
+      //Connection.close
+      if (inner.amqpClass.toInt() == 10 && inner.amqpMethod.toInt() == 50) {
+        //Maybe check the path in the future if needed?
+        //Send connection.open-ok
+        //The supplied octet is the reserved field
+        queue_outgoing.add(AMQPMethodFrame.build(10, 51));
+        System.out.println("Sending Connection.Close-OK");
+      }
+
+      //Channel.open
+      if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 10) {
+        //Build the channel.open-ok frame
+        //Arguments: class, method, args (arg in this case is reserved)
+        AMQPFrame outgoing = AMQPMethodFrame.build(20, 11, new ALongUInt(0));
+
+        //Reply on same channel as we got the message on
+        outgoing.channel = frame.channel;
+
+        //Queue frame to be sent
+        queue_outgoing.add(outgoing);
+
+        //Debugging
+        System.out.println("Sending Channel.Open-OK (for channel " + frame.channel + ")");
+      }
+
+      //Channel.close
+      if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 40) {
+        //Prepare channel.close-ok
+        AMQPFrame outgoing = AMQPMethodFrame.build(20, 41, new ALongUInt(0));
+
+        //Reply on same channel as we got the message on
+        outgoing.channel = frame.channel;
+
+        //Queue frame to be sent
+        queue_outgoing.add(outgoing);
+
+        //Debugging
+        System.out.println("Sending Channel.Close-OK");
+      }
+
+      //Queue.declare
+      if (inner.amqpClass.toInt() == 50 && inner.amqpMethod.toInt() == 10) {
+        //List of arguments to be returned
+        LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+
+        //Queue name received from the client
+        AShortString queue_name = (AShortString) inner.getArg("queue-name");
+
+        //Add arguments
+        arguments.put(new AShortString("queue"), queue_name);
+        arguments.put(new AShortString("message-count"), new ALongUInt(0));
+        arguments.put(new AShortString("consumer-count"), new ALongUInt(1));
+
+        //Build frame and set same channel
+        AMQPFrame outgoing = AMQPMethodFrame.build(50, 11, arguments);
+        outgoing.channel = frame.channel;
+
+        //Send queue.declare-ok
+        queue_outgoing.add(outgoing);
+
+        System.out.println("Sending Queue.Declare-OK");
+      }
     }
 
     //Did we receive a Header frame?

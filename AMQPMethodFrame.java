@@ -122,7 +122,7 @@ public class AMQPMethodFrame extends AMQPInnerFrame {
 
       //We do not want to print field tables recursively
       if (arguments.get(key).type != AMQPNativeType.Type.FIELD_TABLE) {
-        ret += " -> " + arguments.get(key).toString() + "\n";
+        ret += " -> " + arguments.get(key).toString() + " (" + arguments.get(key).type.name() + ")\n";
       } else {
         ret += " -> (Not printing recursively)\n";
       }
