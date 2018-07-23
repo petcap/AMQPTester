@@ -23,6 +23,11 @@ public class AMQPTesterReject extends AMQPTester {
   //Current state this tester is in
   public State state = State.INITIALIZING;
 
+  //Exchange and routing keys as requested by the client
+  public AShortString exchange;
+  public AShortString routingKey;
+
+
   //Constructor, we've just completed the handshake and the client now expects a
   //connection.start object
   AMQPTesterReject(AMQPConnection amqpConnection) {
@@ -72,7 +77,7 @@ public class AMQPTesterReject extends AMQPTester {
         //Arguments to include in the method call
         LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
         arguments.put(new AShortString("channel-max"), new AShortUInt(1));
-        arguments.put(new AShortString("frame-max"), new ALongUInt(4096));
+        arguments.put(new AShortString("frame-max"), new ALongUInt(1024*1024));
         arguments.put(new AShortString("heartbeat"), new AShortUInt(0)); //Ignore heartbeats for now
 
         //Send connection.tune
@@ -127,6 +132,10 @@ public class AMQPTesterReject extends AMQPTester {
           System.out.println("Reject test demands the mandatory flag set");
           System.exit(1);
         }
+
+        //Store the exchange and routing key for later use in basic.return
+        this.exchange = (AShortString) inner.getArg("exchange-name");
+        this.routingKey = (AShortString) inner.getArg("routing-key");
       }
 
       //Connection.open
@@ -212,6 +221,34 @@ public class AMQPTesterReject extends AMQPTester {
     if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.BODY) {
       System.out.println("Received body frame (full size: " + frame.toWire().length() + ") in TesterSimple, data:");
       System.out.println(frame.innerFrame.toString());
+
+      //Since the whole point of this tester is to reject messages, we simply
+      //reply with Basic.Return once receiving a body frame
+      //List of arguments to be returned
+      LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+
+      //At this point, we should have set the exchange name and routing key in the above
+      //code, but let's check just in case
+      if (exchange == null || routingKey == null) {
+        System.out.println("Fatal error: Exchange and/or routing key not received, closing connection");
+        amqpConnection.status = AMQPConnection.AMQPConnectionState.DISCONNECT;
+        return;
+      }
+
+      //Add arguments
+      arguments.put(new AShortString("reply-code"), new AShortUInt(1));
+      arguments.put(new AShortString("reply-text"), new AShortString("Testing message reject"));
+      arguments.put(new AShortString("exchange"), exchange); //Stored previously
+      arguments.put(new AShortString("routing-key"), routingKey); //Stored previously
+
+      //Build frame and set same channel
+      AMQPFrame outgoing = AMQPMethodFrame.build(60, 50, arguments);
+      outgoing.channel = frame.channel;
+
+      //Send basic.return
+      queue_outgoing.add(outgoing);
+
+      System.out.println("Sending Basic.Return");
     }
   }
 
