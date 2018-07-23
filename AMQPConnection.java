@@ -127,6 +127,9 @@ public class AMQPConnection {
           //it too and just issue a warning instead
           if (queue_incoming.equals(AMQP_PYAMQP_HANDSHAKE)) {
             System.out.println("*** WARNING: Accepting faulty handshake version used by PyAMQP");
+
+            //Since this is an error, log it
+            AMQPErrorCollector.log("Invalid initial handshake used; probably PyAMQP");
           }
 
           //Handshake is now complete, update our state
