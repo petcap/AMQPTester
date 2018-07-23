@@ -139,12 +139,16 @@ public class AMQPConnection {
           queue_incoming.clear();
 
           //Initialize the tester depending on the argument received from the command line
+          //TODO: Make this more clean
           if (args.length > 0 && args[0].equals("channels")) {
             System.out.println("Starting using mode: " + args[0]);
             tester = new AMQPTesterChannels(this);
           } else if (args.length > 0 && args[0].equals("multiplexing")) {
             System.out.println("Starting using mode: " + args[0]);
             tester = new AMQPTesterMultiplexing(this);
+          } else if (args.length > 0 && args[0].equals("reject")) {
+            System.out.println("Starting using mode: " + args[0]);
+            tester = new AMQPTesterReject(this);
           } else {
             System.out.println("Starting using default mode");
             tester = new AMQPTesterSimple(this);
