@@ -149,6 +149,9 @@ public class AMQPConnection {
           } else if (args.length > 0 && args[0].equals("reject")) {
             System.out.println("Starting using mode: " + args[0]);
             tester = new AMQPTesterReject(this);
+          } else if (args.length > 0 && args[0].equals("datatypes")) {
+            System.out.println("Starting using mode: " + args[0]);
+            tester = new AMQPTesterDataTypes(this);
           } else {
             System.out.println("Starting using default mode");
             tester = new AMQPTesterSimple(this);

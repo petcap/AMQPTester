@@ -31,6 +31,11 @@ public class AFieldArray extends AMQPNativeType {
     this.members = members;
   }
 
+  //Empty constructor is fine
+  AFieldArray() {
+    this.type = AMQPNativeType.Type.FIELD_ARRAY;
+  }
+
   //Constructor
   //Takes the ByteArrayBuffer and pops one complete Field Array from it
   AFieldArray(ByteArrayBuffer byteArrayBuffer) throws InvalidTypeException {
@@ -100,7 +105,7 @@ public class AFieldArray extends AMQPNativeType {
     return members.size();
   }
 
-  //Encode data for being sent over the network
+  //Encode data to be sent over the network
   public ByteArrayBuffer toWire() {
     //Return data, to be populated
     ByteArrayBuffer ret = new ByteArrayBuffer();
@@ -135,6 +140,12 @@ public class AFieldArray extends AMQPNativeType {
     ret.put(payload);
 
     return ret;
+  }
+
+  //Manually append a value to the Field Array, useful when programmatically
+  //creating payloads
+  public void append(AMQPNativeType value) {
+    members.add(value);
   }
 
   //For debugging, return all arrays

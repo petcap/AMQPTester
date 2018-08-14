@@ -52,6 +52,10 @@ public class AMQPNativeType {
       return new ByteArrayBuffer((byte) 's');
     }
 
+    if (type == Type.FIELD_ARRAY) {
+      return new ByteArrayBuffer((byte) 'A');
+    }
+
     throw new InvalidTypeException("Cannot encode native type to Field Table: " + type.name());
   }
 };
