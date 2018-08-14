@@ -12,6 +12,7 @@ public class AMQPNativeType {
     LONG_STRING, // LONG_UINT (4 bytes) + String
     TIMESTAMP, //8 bytes, unix TS
     FIELD_TABLE, //LONG_UINT (4 bytes) + Table data
+    FIELD_ARRAY, //LONG_UINT (4 bytes) + Array data
     FIELD_VALUE_PAIR, //SHORT_STRING + OCTET type + Field data
     BOOLEAN, //1 byte, 0x00 = false, otherwise = true
     SHORTSHORT_INT, //1 byte
