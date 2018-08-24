@@ -30,8 +30,13 @@ public class AShortUInt extends AMQPNativeType {
   //Encode data type to wire
   public ByteArrayBuffer toWire() {
     //A long is 8 bytes, cut the 6 MSB
+    //Make a new buffer
     ByteArrayBuffer ret = new ByteArrayBuffer(ByteArrayBuffer.longToBytes(value));
+
+    //Cut 6 bytes
     ret.pop(6);
+
+    //Return the remaining value
     return ret;
   }
 

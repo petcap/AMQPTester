@@ -44,8 +44,9 @@ public class AMQPTesterDataTypes extends AMQPTester {
 
     //Add various data types here
     AFieldArray arr = new AFieldArray();
-    arr.append(new AShortString("Test"));
+    //arr.append(new AShortString("Test"));
     arr.append(new ABoolean(false));
+    arr.append(new AShortUInt(123));
     server_props.put(new AShortString("test-data"), arr);
 
     //Add the expected data to the Connection.Start arglist

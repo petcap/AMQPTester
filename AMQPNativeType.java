@@ -56,6 +56,10 @@ public class AMQPNativeType {
       return new ByteArrayBuffer((byte) 'A');
     }
 
+    if (type == Type.SHORT_UINT) {
+      return new ByteArrayBuffer((byte) 'u');
+    }
+
     throw new InvalidTypeException("Cannot encode native type to Field Table: " + type.name());
   }
 };
