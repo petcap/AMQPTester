@@ -41,13 +41,30 @@ public class AMQPTesterDataTypes extends AMQPTester {
     //FIXME: Include more headers?
     LinkedHashMap<AShortString, AMQPNativeType> server_props = new LinkedHashMap<AShortString, AMQPNativeType>();
     server_props.put(new AShortString("copyright"), new ALongString("Data type testing"));
-    
+
     //Add various data types here
     AFieldTable arr = new AFieldTable();
     //arr.append(new AShortString("Test"));
     arr.append(new AShortString("test-1"), new ABoolean(false));
     arr.append(new AShortString("test-2"), new ALongUInt(123));
     //server_props.put(new AShortString("test-data"), arr);
+
+    //Specially encoded UTF-8 testing bytes
+    //This forms one character under UTF8, but uses 2 octets over the wire
+    ByteArrayBuffer utf8 = new ByteArrayBuffer(new byte[]{
+      0x00, 0x00, 0x00, 0x02, //Long string length = 2
+      (byte) 0b11011001, //Octet 1
+      (byte) 0b10111111 //Octet 2
+    });
+
+    try {
+      //Add specially encoded UTF-8 string
+      server_props.put(new AShortString("utf8-test"), new ALongString(utf8));
+      System.out.println("Sending special UTF-8 chars");
+    } catch(Exception e) {
+      System.err.println("UTF8 data encoding failed: " + e.toString());
+      System.exit(1);
+    }
 
     //Add the expected data to the Connection.Start arglist
     start_arg.put(new AShortString("version-major"), new AOctet(0x00));
