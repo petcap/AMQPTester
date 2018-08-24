@@ -21,6 +21,12 @@ public class AFieldTable extends AMQPNativeType {
   //Constructor when not created from an incoming data buffer
   AFieldTable(LinkedHashMap<AShortString, AMQPNativeType> members) {
     this.members = members;
+    this.type = AMQPNativeType.Type.FIELD_TABLE;
+  }
+
+  //Empty constructor, used when creating data programmatically
+  AFieldTable() {
+    this.type = AMQPNativeType.Type.FIELD_TABLE;
   }
 
   //Constructor
@@ -96,6 +102,12 @@ public class AFieldTable extends AMQPNativeType {
   //Number of members in this field table
   public int length() {
     return members.size();
+  }
+
+  //Manually append a value to the Field Table, useful when programmatically
+  //creating payloads
+  public void append(AShortString key, AMQPNativeType value) {
+    members.put(key, value);
   }
 
   //Encode data for being sent over the network

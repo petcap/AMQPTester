@@ -41,13 +41,13 @@ public class AMQPTesterDataTypes extends AMQPTester {
     //FIXME: Include more headers?
     LinkedHashMap<AShortString, AMQPNativeType> server_props = new LinkedHashMap<AShortString, AMQPNativeType>();
     server_props.put(new AShortString("copyright"), new ALongString("Data type testing"));
-
+    
     //Add various data types here
-    AFieldArray arr = new AFieldArray();
+    AFieldTable arr = new AFieldTable();
     //arr.append(new AShortString("Test"));
-    arr.append(new ABoolean(false));
-    arr.append(new AShortUInt(123));
-    server_props.put(new AShortString("test-data"), arr);
+    arr.append(new AShortString("test-1"), new ABoolean(false));
+    arr.append(new AShortString("test-2"), new ALongUInt(123));
+    //server_props.put(new AShortString("test-data"), arr);
 
     //Add the expected data to the Connection.Start arglist
     start_arg.put(new AShortString("version-major"), new AOctet(0x00));

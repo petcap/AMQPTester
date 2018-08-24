@@ -60,6 +60,10 @@ public class AMQPNativeType {
       return new ByteArrayBuffer((byte) 'u');
     }
 
+    if (type == Type.LONG_UINT) {
+      return new ByteArrayBuffer((byte) 'i');
+    }
+
     throw new InvalidTypeException("Cannot encode native type to Field Table: " + type.name());
   }
 };
