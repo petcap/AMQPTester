@@ -1,10 +1,18 @@
 /*
 * This class represents an AMQP Heartbeat frame
-* A complete outer + inner frame of a heartbeat looks like this:
+* A complete outer + inner frame of a heartbeat looks SHOULD like this:
 * 0x04         type, 4=Heartbeat
 * 0x0000       Channel, always zero
-* 0x00000000   Length, always 3 (because inner frame is always 3)
+* 0x00000003   Length, always 3 (because inner frame is always 3)
 * 0x080000     Inner frame
+* 0xCE         End-of-frame
+*
+* However, it seems most implementations (RabbitMQ, Qpid, etc) only sends an
+* empty outer frame with type=8, i.e.:
+* 0x08         type, 8=Heartbeat
+* 0x0000       Channel, always zero
+* 0x00000000   Length, always 0 (because inner frame is always 0)
+* -            Inner frame (empty)
 * 0xCE         End-of-frame
 */
 
@@ -16,13 +24,8 @@ public class AMQPHeartbeatFrame extends AMQPInnerFrame {
   //This constructor is called from AMQPInnerFrame.build()
   AMQPHeartbeatFrame(ALongUInt length, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
     //A Heartbeat inner frame always has the value 0x080000 according to the speification
-    if (length.toInt() != 3) {
+    if (length.toInt() != 0) {
       throw new InvalidFrameException("Invalid Heartbeat length, expecting 3, got: " + length.toInt());
-    }
-
-    //Pop 3 bytes from the buffer and make sure it contains a heartbeat
-    if (!buffer.pop(3).equals(new byte[]{0x08, 0x00, 0x00})) {
-      throw new InvalidFrameException("Invalid Heartbeat content, got: " + buffer.toHexString());
     }
   }
 
@@ -54,6 +57,6 @@ public class AMQPHeartbeatFrame extends AMQPInnerFrame {
 
   //Generate a ByteArrayBuffer with the contents to be sent over the TCP connection
   public ByteArrayBuffer toWire() {
-    return new ByteArrayBuffer(new byte[]{0x08, 0x00, 0x00});
+    return new ByteArrayBuffer(new byte[]{});
   }
 };

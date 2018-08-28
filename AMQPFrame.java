@@ -11,7 +11,7 @@ public class AMQPFrame {
     METHOD((byte) 0x01),
     HEADER((byte) 0x02),
     BODY((byte) 0x03),
-    HEARTBEAT((byte) 0x04);
+    HEARTBEAT((byte) 0x08); //This is ambigiuos; should be 4 according to spec but everyone uses 8
 
     private byte frameType;
 

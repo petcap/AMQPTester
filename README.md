@@ -17,4 +17,4 @@ Example: To run the multiple channels test, execute:
 $ java Server channels
 ```
 
-This code is work in progress, expect things to break
+This is academic code, expect things to break. The code is not very well optimized, as a lot of buffers are copied back and forth a lot. This makes the code slower than other Java implementations of AMQP.
