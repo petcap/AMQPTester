@@ -117,10 +117,11 @@ public class AMQPTesterHeartbeat extends AMQPTester {
     }
 
     //Second attempt to send a heartbeat which is broken (i.e. sent on channel 2)
+    //and also contains payload
     //Channel 1 is being used for subscribing to the queue
     if (temp_count == 1) {
       //Build a standard heartbeat frame
-      AMQPFrame hb = AMQPHeartbeatFrame.build(new AShortUInt(2));
+      AMQPFrame hb = AMQPHeartbeatFrame.build(new AShortUInt(2), new ByteArrayBuffer("Hello world, this is a message inside the heartbeat frame"));
 
       //Queue it up to be sent to the client
       queue_outgoing.add(hb);
@@ -158,7 +159,7 @@ public class AMQPTesterHeartbeat extends AMQPTester {
       //Send body frame
       AMQPFrame body = AMQPBodyFrame.build(
         new AShortUInt(1), //Same channel as received on
-        "Periodical message number " + temp_count
+        "This is the final message over the wire"
       );
 
       //Queue the body frame
