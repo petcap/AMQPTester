@@ -77,7 +77,7 @@ public class AMQPTesterSimple extends AMQPTester {
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
           arguments.put(new AShortString("channel-max"), new AShortUInt(0)); //No specific channel limit
           arguments.put(new AShortString("frame-max"), new ALongUInt(1024)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
-          arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
+          arguments.put(new AShortString("heartbeat"), new AShortUInt(1));
 
           //Send connection.tune
           queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
