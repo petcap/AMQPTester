@@ -133,6 +133,11 @@ public class ByteArrayBuffer {
     return (Arrays.equals(cmp.get(), buffer));
   }
 
+  //Check if this object is identical to a byte array
+  public boolean equals(byte[] cmp) {
+    return (Arrays.equals(cmp, buffer));
+  }
+
   /*
   This method is originally taken from
   https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java#9855338

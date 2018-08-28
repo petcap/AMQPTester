@@ -5,7 +5,7 @@
 */
 
 public class AMQPInnerFrame {
-  
+
   AMQPInnerFrame() {}
   AMQPInnerFrame(ByteArrayBuffer byteArrayBuffer) {}
 
@@ -96,7 +96,30 @@ public class AMQPInnerFrame {
       return amqpBodyFrame;
     }
 
-    //Should never be reached, as all three possible frame types are created above
+    //Build a Heartbeat frame?
+    if (frameType == AMQPFrame.AMQPFrameType.HEARTBEAT) {
+      //System.err.println("Got a body frame:\n" + byteArrayBuffer.toHexString());
+      AMQPHeartbeatFrame amqpHeartbeatFrame = null;
+
+      //Heartbeats MUST be received on channel 0
+      if (channel.toInt() != 0) {
+        throw new InvalidFrameException("Received heartbeat on channel other than 0");
+      }
+
+      //Attempt to build the Heartbeat frame
+      try {
+        amqpHeartbeatFrame = new AMQPHeartbeatFrame(
+        length,
+        byteArrayBuffer
+        );
+      } catch (InvalidTypeException e) {
+        throw new InvalidFrameException("Failed to build Heartbeat frame, invalid encoding: " + e.toString());
+      }
+
+      return amqpHeartbeatFrame;
+    }
+
+    //Should never be reached, as all four possible frame types are created above
     throw new InvalidFrameException("Unknown frame type received (probably a bug in the tester code) : " + frameType.name());
   }
 

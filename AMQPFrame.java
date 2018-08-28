@@ -11,7 +11,7 @@ public class AMQPFrame {
     METHOD((byte) 0x01),
     HEADER((byte) 0x02),
     BODY((byte) 0x03),
-    HEARTHBEAT((byte) 0x04);
+    HEARTBEAT((byte) 0x04);
 
     private byte frameType;
 
@@ -115,6 +115,7 @@ public class AMQPFrame {
   //Expects (at least) one complete frame
   //This method processes any of the four frame types
   //The ByteArrayBuffer will have the frame popped
+  //Throws InvalidFrameException if there exist no valid frame in the buffer
   public static AMQPFrame build(ByteArrayBuffer frame) throws InvalidFrameException {
     //Frame type
     AMQPFrameType type = null;
