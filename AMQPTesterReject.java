@@ -127,10 +127,9 @@ public class AMQPTesterReject extends AMQPTester {
 
       //Basic.publish
       if (inner.amqpClass.toInt() == 60 && inner.amqpMethod.toInt() == 40) {
-        //Make sure the mandatory flag is set
+        //Print warning if mandatory flag is not set (it should be in this test)
         if ( ((AOctet) inner.getArg("mandatory")).toInt() != 1) {
-          System.out.println("Reject test demands the mandatory flag set");
-          System.exit(1);
+          System.out.println(" *** This test demands the mandatory flag set, make sure the client sets it and restart the test.");
         }
 
         //Store the exchange and routing key for later use in basic.return
@@ -236,12 +235,12 @@ public class AMQPTesterReject extends AMQPTester {
       }
 
       //Add arguments
-      arguments.put(new AShortString("reply-code"), new AShortUInt(1));
+      arguments.put(new AShortString("reply-code"), new AShortUInt(541)); //541 = Internal server error
       arguments.put(new AShortString("reply-text"), new AShortString("Testing message reject"));
       arguments.put(new AShortString("exchange"), exchange); //Stored previously
       arguments.put(new AShortString("routing-key"), routingKey); //Stored previously
 
-      //Build frame and set same channel
+      //Build frame and set same channel (basic=60, return=50)
       AMQPFrame outgoing = AMQPMethodFrame.build(60, 50, arguments);
       outgoing.channel = frame.channel;
 
