@@ -27,6 +27,9 @@ public class AMQPTesterReject extends AMQPTester {
   public AShortString exchange;
   public AShortString routingKey;
 
+  //Received header frame, we need to store this since we are returning it later
+  //when basic.return is sent back to the client
+  public AMQPFrame receivedHeaderFrame;
 
   //Constructor, we've just completed the handshake and the client now expects a
   //connection.start object
@@ -212,8 +215,11 @@ public class AMQPTesterReject extends AMQPTester {
 
     //Did we receive a Header frame?
     if (frame.amqpFrameType == AMQPFrame.AMQPFrameType.HEADER) {
-      System.out.println("Received header frame in TesterReject");
+      System.out.println("Received header frame in TesterReject (saving this for basic.return)");
       System.out.println(frame.innerFrame.toString());
+
+      //Store the header frame for future use when sending basic.return
+      receivedHeaderFrame = frame;
     }
 
     //Did we receive a Body frame?
@@ -246,6 +252,10 @@ public class AMQPTesterReject extends AMQPTester {
 
       //Send basic.return
       queue_outgoing.add(outgoing);
+
+      //Return the header and body frames too
+      queue_outgoing.add(receivedHeaderFrame);
+      queue_outgoing.add(frame);
 
       System.out.println("Sending Basic.Return");
     }
