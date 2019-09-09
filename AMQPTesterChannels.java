@@ -3,6 +3,13 @@
 
 import java.util.*;
 
+/*
+ * This test checks that a client does not open more than no_channels channels to the broker
+ * The client under test is sent a maximum channel limit of no_channels during connection and
+ * the client under test should attempt to open as many channels as possible in order to see
+ * if the limit is honored
+ */
+
 public class AMQPTesterChannels extends AMQPTester {
 
   //The server will send this channel limit to the client
