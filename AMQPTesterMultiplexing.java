@@ -124,7 +124,7 @@ public class AMQPTesterMultiplexing extends AMQPTester {
   public static AMQPFrame headerFrame(AShortUInt channel, int length) {
     return AMQPHeaderFrame.build(
       channel, //Channel
-      new AShortUInt(60), //Class ID 60
+      new AShortUInt(60), //Class ID 60, i.e. Basic.Deliver
       new ALongLongUInt(length) //Body length
     );
   }
@@ -168,7 +168,13 @@ public class AMQPTesterMultiplexing extends AMQPTester {
     queue_outgoing.add(bodyFrame(channel_1, "1"));
     queue_outgoing.add(bodyFrame(channel_2, "2"));
     queue_outgoing.add(bodyFrame(channel_1, "1"));
-    queue_outgoing.add(bodyFrame(channel_2, "2"));
+
+    //This is of valid length...
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+
+    //...but both of these are not (many libraries accepts these anyway!)
+    queue_outgoing.add(bodyFrame(channel_2, "22"));
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
     System.out.println("Sent body");
   }
 
