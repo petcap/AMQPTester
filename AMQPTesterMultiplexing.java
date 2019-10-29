@@ -141,8 +141,8 @@ public class AMQPTesterMultiplexing extends AMQPTester {
   public void periodical() {
 
     //Write max 10 bytes per 100ms
-    Server.DELAYED_WRITE = true;
-    Server.SOCKET_BUFFER_SIZE = 10;
+    //Server.DELAYED_WRITE = true;
+    //Server.SOCKET_BUFFER_SIZE = 10;
 
     //Only send periodical messages once we have two consumers on different
     //channels connected
@@ -154,27 +154,25 @@ public class AMQPTesterMultiplexing extends AMQPTester {
     //Basic deliver 2
     queue_outgoing.add(basicDeliver(channel_2, "test_2"));
 
-    //Header 2
-    queue_outgoing.add(headerFrame(channel_2, 4));
-
     //Header 1
     queue_outgoing.add(headerFrame(channel_1, 4));
 
-    //Payload
-    queue_outgoing.add(bodyFrame(channel_1, "1"));
-    queue_outgoing.add(bodyFrame(channel_2, "2"));
-    queue_outgoing.add(bodyFrame(channel_1, "1"));
-    queue_outgoing.add(bodyFrame(channel_2, "2"));
-    queue_outgoing.add(bodyFrame(channel_1, "1"));
-    queue_outgoing.add(bodyFrame(channel_2, "2"));
-    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    //Header 2
+    queue_outgoing.add(headerFrame(channel_2, 4));
 
-    //This is of valid length...
+    //Payload, these are valid length
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
+    //queue_outgoing.add(bodyFrame(channel_1, "1"));
     //queue_outgoing.add(bodyFrame(channel_2, "2"));
 
     //...but both of these are not (many libraries accepts these anyway!)
-    queue_outgoing.add(bodyFrame(channel_2, "22"));
-    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "aa"));
+    queue_outgoing.add(bodyFrame(channel_2, "bb"));
     System.out.println("Sent body");
   }
 
