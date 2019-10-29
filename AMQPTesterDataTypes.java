@@ -43,18 +43,21 @@ public class AMQPTesterDataTypes extends AMQPTester {
     server_props.put(new AShortString("copyright"), new ALongString("Data type testing"));
 
     //Add various data types here
-    AFieldTable arr = new AFieldTable();
+    AFieldTable fieldTable = new AFieldTable();
 
-    //Build a field-array
-    AFieldArray fieldArray = new AFieldArray();
-    fieldArray.append(new ABoolean(false));
-    fieldArray.append(new ALongUInt(321));
+    //Build a field-array to encode inside the field array
+    //AFieldArray fieldArray = new AFieldArray();
+    //fieldArray.append(new ABoolean(false));
+    //fieldArray.append(new ALongUInt(123321));
+    //fieldArray.append(new AShortUInt(321));
 
     //Encode data into the field-table
-    arr.append(new AShortString("fieldarraytest"), fieldArray);
-    arr.append(new AShortString("test-1"), new ABoolean(false));
-    arr.append(new AShortString("test-2"), new ALongUInt(123));
-    server_props.put(new AShortString("test-data"), arr);
+    //fieldTable.append(new AShortString("fieldarraytest"), fieldArray);
+    fieldTable.append(new AShortString("longstr"), new ALongString("Long string, hello world"));
+    //fieldTable.append(new AShortString("inner-SS"), new AShortString("SS content"));
+    //fieldTable.append(new AShortString("test-1"), new ABoolean(false));
+    //fieldTable.append(new AShortString("test-2"), new ALongUInt(123));
+    server_props.put(new AShortString("inner-FT"), fieldTable);
 
     //Specially encoded UTF-8 testing bytes
     //This forms one character under UTF8, but uses 2 octets over the wire
@@ -66,7 +69,7 @@ public class AMQPTesterDataTypes extends AMQPTester {
 
     try {
       //Add specially encoded UTF-8 string
-      server_props.put(new AShortString("utf8-test"), new ALongString(utf8));
+      //server_props.put(new AShortString("utf8-test"), new ALongString(utf8));
       System.out.println("Sending special UTF-8 chars");
     } catch(Exception e) {
       System.err.println("UTF8 data encoding failed: " + e.toString());
