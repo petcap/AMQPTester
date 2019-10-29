@@ -53,8 +53,8 @@ public class AMQPTesterDataTypes extends AMQPTester {
     //This forms one character under UTF8, but uses 2 octets over the wire
     ByteArrayBuffer utf8 = new ByteArrayBuffer(new byte[]{
       0x00, 0x00, 0x00, 0x02, //Long string length = 2
-      (byte) 0b11011001, //Octet 1
-      (byte) 0b10111111 //Octet 2
+      (byte) 0b11011001, //Octet 1 (UTF-8 multibyte char, the two MSBs indicate two bytes)
+      (byte) 0b10111111 //Octet 2 (Char continued)
     });
 
     try {
