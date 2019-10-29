@@ -44,10 +44,17 @@ public class AMQPTesterDataTypes extends AMQPTester {
 
     //Add various data types here
     AFieldTable arr = new AFieldTable();
-    //arr.append(new AShortString("Test"));
+
+    //Build a field-array
+    AFieldArray fieldArray = new AFieldArray();
+    fieldArray.append(new ABoolean(false));
+    fieldArray.append(new ALongUInt(321));
+
+    //Encode data into the field-table
+    arr.append(new AShortString("fieldarraytest"), fieldArray);
     arr.append(new AShortString("test-1"), new ABoolean(false));
     arr.append(new AShortString("test-2"), new ALongUInt(123));
-    //server_props.put(new AShortString("test-data"), arr);
+    server_props.put(new AShortString("test-data"), arr);
 
     //Specially encoded UTF-8 testing bytes
     //This forms one character under UTF8, but uses 2 octets over the wire
