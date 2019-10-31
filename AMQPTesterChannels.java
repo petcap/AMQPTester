@@ -171,11 +171,11 @@ public class AMQPTesterChannels extends AMQPTester {
         //Queue frame to be sent
         queue_outgoing.add(outgoing);
 
-        //Debugging
-        System.out.println("Sending Channel.Open-OK");
-
         //Increase channel number
         open_channels += 1;
+
+        //Debugging
+        System.out.println("Sending Channel.Open-OK (Currently open: " + open_channels + ")");
       }
 
       //Channel.close
