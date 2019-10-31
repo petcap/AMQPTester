@@ -175,7 +175,7 @@ public class AMQPTesterChannels extends AMQPTester {
         open_channels += 1;
 
         //Debugging
-        System.out.println("Sending Channel.Open-OK (Currently open: " + open_channels + ")");
+        System.out.println("Sending Channel.Open-OK (Currently open: " + open_channels + ", last opened: " + frame.channel.toString() + ")");
       }
 
       //Channel.close
