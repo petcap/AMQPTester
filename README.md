@@ -1,5 +1,7 @@
 # AMQPTester
-An AMQ Protocol tester and validator written in Java.
+An AMQP Protocol tester and validator written in Java. Implements AMQP from scratch using Javas NIO socket API. Tested with a variety of clients such as Py-AMQP, RabbitMQ-Java, AMQP-PHP and others.
+
+This code was developed for my masters thesis at The Royal Institute of Technology (KTH) in Stockholm, Sweden. It implements the AMQP 0-9-1 wire-level protocol as described by the formal specification.
 
 Compile and run using:
 ```
@@ -17,4 +19,4 @@ Example: To run the multiple channels test, execute:
 $ java Server channels
 ```
 
-This is academic code, expect things to break. The code is not very well optimized, as a lot of buffers are copied back and forth a lot. This makes the code slower than other Java implementations of AMQP.
+This is academic code and is hence not meant to be used in production environments. All code in this repository is released under GNU GPLv2.
