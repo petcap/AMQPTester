@@ -32,9 +32,6 @@ public class AMQPTesterMultiplexing extends AMQPTester {
   public AShortUInt channel_1;
   public AShortUInt channel_2;
 
-  //Number of auto generated queue names
-  public int autoChannelNumber = 0;
-
   //Constructor, we've just completed the handshake and the client now expects a
   //connection.start object
   AMQPTesterMultiplexing(AMQPConnection amqpConnection) {
@@ -262,8 +259,8 @@ public class AMQPTesterMultiplexing extends AMQPTester {
         //declared on the active vhost & channel automatically.
         if (queue_name.toString().equals("")) {
 
-          //Generate a new queue name and increase counter
-          queue_name = new AShortString("amq.autoName_" + (autoChannelNumber++));
+          //Generate a queue named based on the channel it was received on
+          queue_name = new AShortString("amq.autoName_" + frame.channel.toString());
 
           //Print info about the queue name
           System.out.println("*** No queue name specified, returning: " + queue_name.toString());
