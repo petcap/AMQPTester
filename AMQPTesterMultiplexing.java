@@ -263,7 +263,7 @@ public class AMQPTesterMultiplexing extends AMQPTester {
         if (queue_name.toString().equals("")) {
 
           //Generate a new queue name and increase counter
-          queue_name = new AShortString("amp.autoName_" + (autoChannelNumber++));
+          queue_name = new AShortString("amq.autoName_" + (autoChannelNumber++));
 
           //Print info about the queue name
           System.out.println("*** No queue name specified, returning: " + queue_name.toString());
