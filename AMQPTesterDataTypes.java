@@ -46,17 +46,20 @@ public class AMQPTesterDataTypes extends AMQPTester {
     AFieldTable fieldTable = new AFieldTable();
 
     //Build a field-array to encode inside the field array
-    //AFieldArray fieldArray = new AFieldArray();
+    AFieldArray fieldArray = new AFieldArray();
     //fieldArray.append(new ABoolean(false));
-    //fieldArray.append(new ALongUInt(123321));
+    //fieldArray.append(new ALongUInt(123));
     //fieldArray.append(new AShortUInt(321));
+    //fieldArray.append(new AShortString("Array SS"));
+    fieldArray.append(new ALongString("Array LS"));
 
     //Encode data into the field-table
-    //fieldTable.append(new AShortString("fieldarraytest"), fieldArray);
-    fieldTable.append(new AShortString("longstr"), new ALongString("Long string, hello world"));
-    //fieldTable.append(new AShortString("inner-SS"), new AShortString("SS content"));
-    //fieldTable.append(new AShortString("test-1"), new ABoolean(false));
-    //fieldTable.append(new AShortString("test-2"), new ALongUInt(123));
+    fieldTable.append(new AShortString("inner-FA"), fieldArray);
+    //fieldTable.append(new AShortString("inner-LS"), new ALongString("Field LS"));
+    //fieldTable.append(new AShortString("inner-SS"), new AShortString("Field SS"));
+    //fieldTable.append(new AShortString("inner-BOOL"), new ABoolean(false));
+    //fieldTable.append(new AShortString("inner-LONG-UINT"), new ALongUInt(123));
+    //fieldTable.append(new AShortString("inner-SHORT-UINT"), new AShortUInt(123));
     server_props.put(new AShortString("inner-FT"), fieldTable);
 
     //Specially encoded UTF-8 testing bytes
@@ -70,7 +73,7 @@ public class AMQPTesterDataTypes extends AMQPTester {
     try {
       //Add specially encoded UTF-8 string
       //server_props.put(new AShortString("utf8-test"), new ALongString(utf8));
-      System.out.println("Sending special UTF-8 chars");
+      //System.out.println("Sending special UTF-8 chars");
     } catch(Exception e) {
       System.err.println("UTF8 data encoding failed: " + e.toString());
       System.exit(1);
@@ -109,9 +112,9 @@ public class AMQPTesterDataTypes extends AMQPTester {
 
           //Arguments to include in the method call
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
-          arguments.put(new AShortString("channel-max"), new AShortUInt(0)); //No specific channel limit
+          arguments.put(new AShortString("channel-max"), new AShortUInt(100)); //No specific channel limit
           arguments.put(new AShortString("frame-max"), new ALongUInt(1024)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
-          arguments.put(new AShortString("heartbeat"), new AShortUInt(10));
+          arguments.put(new AShortString("heartbeat"), new AShortUInt(0));
 
           //Send connection.tune
           queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
