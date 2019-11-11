@@ -197,6 +197,18 @@ public class AMQPTesterReject extends AMQPTester {
         //Queue name received from the client
         AShortString queue_name = (AShortString) inner.getArg("queue-name");
 
+        //According to page 6 in the XML-derived specification, the queue-name
+        //may be empty. In that case, the server should assign the last queue name
+        //declared on the active vhost & channel automatically.
+        if (queue_name.toString().equals("")) {
+
+          //Generate a queue named based on the channel it was received on
+          queue_name = new AShortString("amq.autoName_" + frame.channel.toString());
+
+          //Print info about the queue name
+          System.out.println("*** No queue name specified, returning: " + queue_name.toString());
+        }
+
         //Add arguments
         arguments.put(new AShortString("queue"), queue_name);
         arguments.put(new AShortString("message-count"), new ALongUInt(0));
