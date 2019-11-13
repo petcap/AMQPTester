@@ -13,10 +13,10 @@ import java.util.*;
 public class AMQPTesterChannels extends AMQPTester {
 
   //The server will send this channel limit to the client
-  public static final int no_channels = 0;
+  public static final int no_channels = 100;
 
   //The current count of open channels
-  public int open_channels = 0;
+  public int open_channels = 100;
 
   //Queue of incoming frames
   LinkedList<AMQPFrame> queue_incoming = new LinkedList<AMQPFrame>();
@@ -156,7 +156,8 @@ public class AMQPTesterChannels extends AMQPTester {
         if (open_channels >= no_channels) {
           System.out.println("*** WARNING: Over channel limit, but still requesting more channels");
 
-          //Drop the client
+          //Make AMQPTester drop the client if it requests more channels than
+          //negotiated. This should be done according to the specs.
           //amqpConnection.status = AMQPConnection.AMQPConnectionState.DISCONNECT;
           //return;
         }
