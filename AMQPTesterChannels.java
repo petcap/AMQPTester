@@ -16,7 +16,7 @@ public class AMQPTesterChannels extends AMQPTester {
   public static final int no_channels = 100;
 
   //The current count of open channels
-  public int open_channels = 100;
+  public int open_channels = 0;
 
   //Queue of incoming frames
   LinkedList<AMQPFrame> queue_incoming = new LinkedList<AMQPFrame>();
