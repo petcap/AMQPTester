@@ -29,6 +29,15 @@ public class ByteArrayBuffer {
     buffer = string.getBytes();
   }
 
+  //Build one ByteArrayBuffer from many smaller ones
+  public static ByteArrayBuffer build(ByteArrayBuffer... buffers) {
+    ByteArrayBuffer ret = new ByteArrayBuffer();
+    for (ByteArrayBuffer c : buffers) {
+      ret.put(c);
+    }
+    return ret;
+  }
+
   //Put a byte[] at the end of the queue
   public void put(byte[] arr) {
     byte[] new_buffer = new byte[buffer.length + arr.length];

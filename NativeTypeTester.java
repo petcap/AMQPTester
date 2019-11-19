@@ -11,6 +11,14 @@ public class NativeTypeTester {
       System.out.println("Starting tests...");
       ByteArrayBuffer test;
 
+      ByteArrayBuffer ss = ByteArrayBuffer.build(
+        new ByteArrayBuffer("AA")
+      );
+
+      System.out.println(ss.toHexString());
+
+      System.exit(0);
+
       System.out.println("ABoolean:");
       test = new ByteArrayBuffer(new byte[]{ 0x02 });
       System.out.println("From wire: " + test.toHexString());

