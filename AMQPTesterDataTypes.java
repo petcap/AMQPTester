@@ -67,8 +67,14 @@ public class AMQPTesterDataTypes extends AMQPTester {
     //access to any field/array encoded data set to inject arbitrary protocol data
     try {
       fieldTable.append(new AShortString("arbitrary"), new AShortString(ByteArrayBuffer.build(
-        new ByteArrayBuffer(new byte[]{14, 0x00}), //Short string length & first char, or 16 bit integer in RabbitMQ
-        new ByteArrayBuffer("S"), //Offset is now outside of the 16 bit integer, attempt to inject a long string
+        new ByteArrayBuffer(new byte[]{22, (byte) 0xFF}), //Short string length & first char, or 16 bit integer in RabbitMQ
+
+        //RabbitMQ compatible clients will have decoded the above two bytes as a
+        //signed 16 bit int, we are now free to use the rest of the string to
+        //inject data as we wish.
+        new ByteArrayBuffer(new byte[]{7}), //Injected key length
+        new ByteArrayBuffer("int-str"), //Injected key
+        new ByteArrayBuffer("S"), //Injected data type, S = long string
         new ByteArrayBuffer(new byte[]{0x00, 0x00, 0x00, 0x08}), //Long string length
         new ByteArrayBuffer("overflow") //Injected string contents
       )));
