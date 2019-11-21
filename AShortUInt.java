@@ -72,8 +72,8 @@ public class AShortUInt extends AMQPNativeType {
   }
 
   //Get a specific bit mask flag
-  //15 = LSB
-  //0 = MSB
+  //0 = LSB
+  //15 = MSB
   public boolean getFlag(int flag) {
     return getFlags()[flag];
   }
