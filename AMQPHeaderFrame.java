@@ -155,8 +155,13 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
     //Payload/body size
     ret.put(bodySize.toWire());
 
-    //Flags
+    //Flag indicators
     ret.put(specialFlags);
+
+    //Actual flag payload
+    for(AMQPNativeType flag : properties.values()) {
+      ret.put(flag.toWire());
+    }
 
     return ret;
   }
