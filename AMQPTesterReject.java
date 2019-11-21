@@ -232,6 +232,18 @@ public class AMQPTesterReject extends AMQPTester {
 
       //Store the header frame for future use when sending basic.return
       receivedHeaderFrame = frame;
+
+      //Node AMQP defines flag 13 (reserved zero length short string) in header frames as
+      //a long string and complains about the frame being too short. This is not
+      //OK according to the specification, but we override it manually here in order to
+      //perform the rest of the test
+      AMQPHeaderFrame f = (AMQPHeaderFrame) receivedHeaderFrame.innerFrame;
+
+      //Override the header frame flags
+      f.properties = new LinkedHashMap<AShortString, AMQPNativeType>();
+
+      //The reserved value should be a zero length string
+      f.properties.put(new AShortString("reserved-invalid"), new ALongString(""));
     }
 
     //Did we receive a Body frame?
