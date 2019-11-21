@@ -45,7 +45,6 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
 
   //Build a new header frame
   public static AMQPFrame build(AShortUInt channel, AShortUInt class_id, AShortUInt flags, ALongLongUInt body_size, LinkedHashMap<AShortString, AMQPNativeType> properties) {
-
     //Build the inner frame
     AMQPHeaderFrame header_frame = new AMQPHeaderFrame(class_id, body_size, flags, properties);
 
@@ -58,9 +57,9 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
     return build(channel, class_id, new AShortUInt(0), body_size, new LinkedHashMap<AShortString, AMQPNativeType>());
   }
 
-
   //Constructor for creating frame from wire
   AMQPHeaderFrame(AShortUInt amqpClass, ByteArrayBuffer buffer) throws InvalidFrameException, InvalidTypeException {
+
     //Provided class
     this.amqpClass = amqpClass;
 
@@ -72,14 +71,27 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
 
     //Pop the property flags
     //TODO: If LSB = 1, then we should read more flags
-    //I don't think more than one flag field is used in any implementation
+    //This should techically never be needed as all possible flags will fit into
+    //one flag indicator, but the AMQP grammar still allows for multiple ones...
+    //Some libraries have multiple flag indicators hard coded, so it may actually
+    //be useful...
     this.flags = new AShortUInt(buffer);
 
     //Read all set flag values into the properties...
     //TODO: Make sure this works properly
-
     //Read the set properties for the Basic class
     if (amqpClass.equals(new AShortUInt(60))) {
+
+      //Some debugging about which flags were set
+      for(int i=0; i!=14; ++i) {
+        if (flags.getFlag(i)) {
+          System.out.println("*** Will decode flag no " + i);
+        } else {
+          System.out.println("*** Will NOT decode flag no " + i);
+        }
+      }
+
+      //Decode and store all defined flags
       if (flags.getFlag(0)) properties.put(new AShortString("content-type"), new AShortString(buffer));
       if (flags.getFlag(1)) properties.put(new AShortString("content-encoding"), new AShortString(buffer));
       if (flags.getFlag(2)) properties.put(new AShortString("headers"), new AFieldTable(buffer)); //Fixme: Correct type?

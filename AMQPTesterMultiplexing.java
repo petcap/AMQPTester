@@ -141,8 +141,8 @@ public class AMQPTesterMultiplexing extends AMQPTester {
   public void periodical() {
 
     //Write max 10 bytes per 100ms
-    //Server.DELAYED_WRITE = true;
-    //Server.SOCKET_BUFFER_SIZE = 10;
+    Server.DELAYED_WRITE = true;
+    Server.SOCKET_BUFFER_SIZE = 10;
 
     //Only send periodical messages once we have two consumers on different
     //channels connected
@@ -167,12 +167,12 @@ public class AMQPTesterMultiplexing extends AMQPTester {
     queue_outgoing.add(bodyFrame(channel_2, "2"));
     queue_outgoing.add(bodyFrame(channel_1, "1"));
     queue_outgoing.add(bodyFrame(channel_2, "2"));
-    //queue_outgoing.add(bodyFrame(channel_1, "1"));
-    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+    queue_outgoing.add(bodyFrame(channel_1, "1"));
+    queue_outgoing.add(bodyFrame(channel_2, "2"));
 
     //...but both of these are not (many libraries accepts these anyway!)
-    queue_outgoing.add(bodyFrame(channel_1, "aa"));
-    queue_outgoing.add(bodyFrame(channel_2, "bb"));
+    //queue_outgoing.add(bodyFrame(channel_1, "aa"));
+    //queue_outgoing.add(bodyFrame(channel_2, "bb"));
     System.out.println("Sent body");
   }
 

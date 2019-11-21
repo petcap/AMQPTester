@@ -67,6 +67,10 @@ public class AShortUInt extends AMQPNativeType {
     return ret;
   }
 
+  public boolean equals(AShortUInt other) {
+    return (this.value == other.value);
+  }
+
   //Get a specific bit mask flag
   //15 = LSB
   //0 = MSB
