@@ -85,9 +85,9 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
       //Some debugging about which flags were set
       for(int i=0; i!=14; ++i) {
         if (flags.getFlag(i)) {
-          System.out.println("*** Will decode flag no " + i);
+          //System.out.println("*** Will decode flag no " + i);
         } else {
-          System.out.println("*** Will NOT decode flag no " + i);
+          //System.out.println("*** Will NOT decode flag no " + i);
         }
       }
 

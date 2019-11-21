@@ -61,7 +61,7 @@ public class AShortUInt extends AMQPNativeType {
     byte[] tmp = toFlagString().getBytes();
 
     for(int i=0; i!=16; ++i) {
-      ret[i] = (tmp[1] == '1');
+      ret[i] = (tmp[15-i] == '1');
     }
 
     return ret;
