@@ -237,13 +237,13 @@ public class AMQPTesterReject extends AMQPTester {
       //a long string and complains about the frame being too short. This is not
       //OK according to the specification, but we override it manually here in order to
       //perform the rest of the test
-      AMQPHeaderFrame f = (AMQPHeaderFrame) receivedHeaderFrame.innerFrame;
+      //AMQPHeaderFrame f = (AMQPHeaderFrame) receivedHeaderFrame.innerFrame;
 
       //Override the header frame flags
-      f.properties = new LinkedHashMap<AShortString, AMQPNativeType>();
+      //f.properties = new LinkedHashMap<AShortString, AMQPNativeType>();
 
       //The reserved value should be a zero length string
-      f.properties.put(new AShortString("reserved-invalid"), new ALongString(""));
+      //f.properties.put(new AShortString("reserved-invalid"), new ALongString(""));
     }
 
     //Did we receive a Body frame?
