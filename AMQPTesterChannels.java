@@ -152,14 +152,20 @@ public class AMQPTesterChannels extends AMQPTester {
 
       //Channel.open
       if (inner.amqpClass.toInt() == 20 && inner.amqpMethod.toInt() == 10) {
-        //Check that we are under the channel limit
+
+        //Make sure the channel is being opened on another channel number than zero
+        if (frame.channel.toInt() == 0) {
+          System.out.println("*** WARNING: Received channel-open on channel 0");
+        }
+
+        //Check if we are over the channel limit
         if (open_channels >= no_channels) {
           System.out.println("*** WARNING: Over channel limit, but still requesting more channels");
 
           //Make AMQPTester drop the client if it requests more channels than
           //negotiated. This should be done according to the specs.
-          //amqpConnection.status = AMQPConnection.AMQPConnectionState.DISCONNECT;
-          //return;
+          amqpConnection.status = AMQPConnection.AMQPConnectionState.DISCONNECT;
+          return;
         }
 
         //Build the channel.open-ok frame
