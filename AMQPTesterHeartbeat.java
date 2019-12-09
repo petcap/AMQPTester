@@ -77,7 +77,7 @@ public class AMQPTesterHeartbeat extends AMQPTester {
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
           arguments.put(new AShortString("channel-max"), new AShortUInt(0)); //No specific channel limit
           arguments.put(new AShortString("frame-max"), new ALongUInt(1024)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
-          arguments.put(new AShortString("heartbeat"), new AShortUInt(1)); //Heartbeat every 1 sec
+          arguments.put(new AShortString("heartbeat"), new AShortUInt(5)); //Heartbeat every 1 sec
 
           //Send connection.tune
           queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
@@ -126,7 +126,7 @@ public class AMQPTesterHeartbeat extends AMQPTester {
       //Queue it up to be sent to the client
       queue_outgoing.add(hb);
 
-      System.out.println("Sent BROKEN heartbeat frame on channel 0: " + hb.toWire().toHexString());
+      System.out.println("Sent BROKEN heartbeat frame on channel 2: " + hb.toWire().toHexString());
       temp_count++;
       return;
     }
@@ -136,8 +136,8 @@ public class AMQPTesterHeartbeat extends AMQPTester {
       arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
       arguments.put(new AShortString("delivery-tag"), new ALongLongUInt(1));
       arguments.put(new AShortString("redelivered"), new ABoolean(false));
-      arguments.put(new AShortString("exchange"), new AShortString("Heeey"));
-      arguments.put(new AShortString("routing-key"), new AShortString("hello"));
+      arguments.put(new AShortString("exchange"), new AShortString("test_1"));
+      arguments.put(new AShortString("routing-key"), new AShortString("test_1"));
       AMQPFrame outgoing = AMQPMethodFrame.build(60, 60, arguments);
 
       //Set same channel
@@ -150,7 +150,7 @@ public class AMQPTesterHeartbeat extends AMQPTester {
       AMQPFrame header = AMQPHeaderFrame.build(
         new AShortUInt(1), //Same channel as received on
         new AShortUInt(60), //Class ID 60
-        new ALongLongUInt(23) //Body length
+        new ALongLongUInt(5) //Body length
       );
 
       queue_outgoing.add(header);
@@ -159,13 +159,13 @@ public class AMQPTesterHeartbeat extends AMQPTester {
       //Send body frame
       AMQPFrame body = AMQPBodyFrame.build(
         new AShortUInt(1), //Same channel as received on
-        "This is the final message over the wire"
+        "Final"
       );
 
       //Queue the body frame
       queue_outgoing.add(body);
       System.out.println("Sent message AFTER sending broken heartbeat");
-      temp_count++;
+      //temp_count++;
       return;
     }
   }
@@ -284,8 +284,8 @@ public class AMQPTesterHeartbeat extends AMQPTester {
         arguments.put(new AShortString("consumer-tag"), new AShortString("amq.HelloWorld"));
         arguments.put(new AShortString("delivery-tag"), new ALongLongUInt(1));
         arguments.put(new AShortString("redelivered"), new ABoolean(false));
-        arguments.put(new AShortString("exchange"), new AShortString("hello"));
-        arguments.put(new AShortString("routing-key"), new AShortString("hello"));
+        arguments.put(new AShortString("exchange"), new AShortString("test_1"));
+        arguments.put(new AShortString("routing-key"), new AShortString("test_1"));
         outgoing = AMQPMethodFrame.build(60, 60, arguments);
 
         //Set same channel
@@ -307,7 +307,7 @@ public class AMQPTesterHeartbeat extends AMQPTester {
         //Send body frame
         AMQPFrame body = AMQPBodyFrame.build(
           frame.channel, //Same channel as received on
-          "Hello from AMQPTesterHeartbeat.java"
+          "Hello"
         );
 
         //Queue the body frame

@@ -139,6 +139,9 @@ public class AMQPTesterMultiplexing extends AMQPTester {
 
   //Periodical update
   public void periodical() {
+    //Bad channel numbers
+    AShortUInt channel_zero = new AShortUInt(0);
+    AShortUInt channel_upper = new AShortUInt(123);
 
     //Write max 10 bytes per 100ms
     Server.DELAYED_WRITE = true;
@@ -163,12 +166,17 @@ public class AMQPTesterMultiplexing extends AMQPTester {
     //Payload, these are valid length
     queue_outgoing.add(bodyFrame(channel_1, "1"));
     queue_outgoing.add(bodyFrame(channel_2, "2"));
+
     queue_outgoing.add(bodyFrame(channel_1, "1"));
     queue_outgoing.add(bodyFrame(channel_2, "2"));
+
     queue_outgoing.add(bodyFrame(channel_1, "1"));
     queue_outgoing.add(bodyFrame(channel_2, "2"));
-    queue_outgoing.add(bodyFrame(channel_1, "1"));
-    queue_outgoing.add(bodyFrame(channel_2, "2"));
+
+    //queue_outgoing.add(bodyFrame(channel_1, "1"));
+    //queue_outgoing.add(bodyFrame(channel_2, "2"));
+
+    //queue_outgoing.add(bodyFrame(channel_upper, "2"));
 
     //...but both of these are not (many libraries accepts these anyway!)
     //queue_outgoing.add(bodyFrame(channel_1, "aa"));

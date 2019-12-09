@@ -77,7 +77,7 @@ public class AMQPTesterSimple extends AMQPTester {
           LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
           arguments.put(new AShortString("channel-max"), new AShortUInt(0)); //No specific channel limit
           arguments.put(new AShortString("frame-max"), new ALongUInt(1024)); //TODO: Write test case for this; clients tends to accept this value but does not honor it later on
-          arguments.put(new AShortString("heartbeat"), new AShortUInt(1));
+          arguments.put(new AShortString("heartbeat"), new AShortUInt(2));
 
           //Send connection.tune
           queue_outgoing.add(AMQPMethodFrame.build(10, 30, arguments));
@@ -106,21 +106,21 @@ public class AMQPTesterSimple extends AMQPTester {
     //Send Channel.Close after 3 messages
     if (temp_count == 3) {
       ////Arguments for channel.close
-      //LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
-      //arguments.put(new AShortString("reply-code"), new AShortUInt(0));
-      //arguments.put(new AShortString("reply-text"), new AShortString(""));
-      //arguments.put(new AShortString("class-id"), new AShortUInt(0));
-      //arguments.put(new AShortString("method-id"), new AShortUInt(0));
+      LinkedHashMap<AShortString, AMQPNativeType> arguments = new LinkedHashMap<AShortString, AMQPNativeType>();
+      arguments.put(new AShortString("reply-code"), new AShortUInt(0));
+      arguments.put(new AShortString("reply-text"), new AShortString(""));
+      arguments.put(new AShortString("class-id"), new AShortUInt(0));
+      arguments.put(new AShortString("method-id"), new AShortUInt(0));
 
-      ////Build the frame object
-      //AMQPFrame outgoing = AMQPMethodFrame.build(20, 40, arguments);
+      //Build the frame object
+      AMQPFrame outgoing = AMQPMethodFrame.build(20, 40, arguments);
 
-      ////We should be on channel 1
-      //outgoing.channel = new AShortUInt(1);
+      //We should be on channel 1
+      outgoing.channel = new AShortUInt(1);
 
-      ////Send command to other peer
-      //queue_outgoing.add(outgoing);
-      //System.out.println("Sending channel.close in periodical");
+      //Send command to other peer
+      queue_outgoing.add(outgoing);
+      System.out.println("Sending channel.close in periodical");
 
       return;
     }

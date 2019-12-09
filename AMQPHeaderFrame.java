@@ -17,11 +17,11 @@ public class AMQPHeaderFrame extends AMQPInnerFrame {
 
   //Header frame properties
   //The bit format is as follows:
-  //If the LSB is set, then another octet immedately follows with more flags
+  //If the LSB is set, then another two octet (a.k.a. short-uint) immedately follows with more flags
   //This goes on until the LSB is zeroed out
   //For example:
-  // 0x00001000 - One flag set on index 2
-  // 0x00001001 0x00001000 - 2 flags set on index 2 and 9
+  // 0x00000000 00001000 - One flag set on index 2
+  // 0x00000000 00000101 00000000 0x00001000 - 2 flags set on index 2 and 16
   //The standard only defines 14 flags, so most implementations probably
   //just assign a short uint, but there should be nothing stopping us from sending
   //lots of zeroed out flags as long as each LSB is set to 1

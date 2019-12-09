@@ -68,8 +68,8 @@ public class AMQPTesterDataTypes extends AMQPTester {
 
     //Encode data into the field-table
     fieldTable.append(new AShortString("inner-FA"), fieldArray);
-    //fieldTable.append(new AShortString("inner-LS"), new ALongString("Field LS"));
-    //fieldTable.append(new AShortString("inner-SS"), new AShortString("Field SS"));
+    fieldTable.append(new AShortString("inner-LS"), new ALongString("Field LS"));
+    fieldTable.append(new AShortString("inner-SS"), new AShortString("Field SS"));
     //fieldTable.append(new AShortString("inner-BOOL"), new ABoolean(false));
     //fieldTable.append(new AShortString("inner-LONG-UINT"), new ALongUInt(123));
     //fieldTable.append(new AShortString("inner-SHORT-UINT"), new AShortUInt(123));
@@ -78,22 +78,21 @@ public class AMQPTesterDataTypes extends AMQPTester {
     //RabbitMQ uses the encoding tag for short strings (lower case s) for 16 bits
     //signed integers. This can (maybe?) be exploited to allow an attacker with
     //access to any field/array encoded data set to inject arbitrary protocol data
-    //try {
-    //  fieldTable.append(new AShortString("arbitrary"), new AShortString(ByteArrayBuffer.build(
-    //    new ByteArrayBuffer(new byte[]{22, (byte) 0xFF}), //Short string length & first char, or 16 bit integer in RabbitMQ
-
-    //    //RabbitMQ compatible clients will have decoded the above two bytes as a
-    //    //signed 16 bit int, we are now free to use the rest of the string to
-    //    //inject data as we wish.
-    //    new ByteArrayBuffer(new byte[]{7}), //Injected key length
-    //    new ByteArrayBuffer("int-str"), //Injected key
-    //    new ByteArrayBuffer("S"), //Injected data type, S = long string
-    //    new ByteArrayBuffer(new byte[]{0x00, 0x00, 0x00, 0x08}), //Long string length
-    //    new ByteArrayBuffer("overflow") //Injected string contents
-    //  )));
-    //} catch (InvalidTypeException e) {
-    //  System.err.println("Could not encode arbitrary short string: " + e.toString());
-    //}
+//    try {
+//      fieldTable.append(new AShortString("arbitrary"), new AShortString(ByteArrayBuffer.build(
+//        new ByteArrayBuffer(new byte[]{22, (byte) 0xFF}), //Short string length & first char, or 16 bit integer in RabbitMQ
+//        //RabbitMQ compatible clients will have decoded the above two bytes as a
+//        //signed 16 bit int, we are now free to use the rest of the string to
+//        //inject data as we wish.
+//        new ByteArrayBuffer(new byte[]{7}), //Injected key length
+//        new ByteArrayBuffer("int-str"), //Injected key
+//        new ByteArrayBuffer("S"), //Injected data type, S = long string
+//        new ByteArrayBuffer(new byte[]{0x00, 0x00, 0x00, 0x08}), //Long string length
+//        new ByteArrayBuffer("overflow") //Injected string contents
+//      )));
+//    } catch (InvalidTypeException e) {
+//      System.err.println("Could not encode arbitrary short string: " + e.toString());
+//    }
 
     //Encode the field table (and all of the above) into the handshake
     server_props.put(new AShortString("inner-FT"), fieldTable);
