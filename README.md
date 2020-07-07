@@ -20,3 +20,5 @@ $ java Server channels
 ```
 
 This is academic code and is hence not meant to be used in production environments. All code in this repository is released under GNU GPLv2.
+
+More documentation is available in the thesis, see `Thesis.pdf`.
